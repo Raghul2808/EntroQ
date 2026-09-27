@@ -1,0 +1,770 @@
+/* ==========================================================================
+   QUANTUM RANDOM PASSWORD GENERATOR - DESIGN SYSTEM & STYLESHEET
+   Aesthetic: Cryogenic Quantum Instrument / Laboratory Control Terminal
+   Strict Constraints: No purple gradients, no glassmorphism, no emoji icons.
+   ========================================================================== */
+
+/* 1. Design Tokens & CSS Custom Properties */
+:root {
+  /* Typography */
+  --font-ui: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Color Palette (Laboratory Dark Instrument) */
+  --bg-void: #0a0d14;            /* Primary chassis background */
+  --bg-surface: #111520;         /* Instrument panel background */
+  --bg-surface-elevated: #181d2c;/* Raised bays and interactive elements */
+  --bg-surface-sunken: #0c0f17;  /* Recessed displays and terminal screens */
+  
+  --border-dim: #1e2436;         /* Panel seams */
+  --border-subtle: #2d354d;      /* Separators and control borders */
+  --border-accent: #3d496a;      /* Highlighted active borders */
+
+  --text-primary: #e2e8f0;       /* High-contrast scientific readout */
+  --text-secondary: #94a3b8;     /* Parameter labels and secondary telemetry */
+  --text-tertiary: #64748b;      /* Unit identifiers and disabled markings */
+
+  /* Quantum State Phosphors */
+  --quantum-gold: #f59e0b;       /* Coherent / Entropy Accent (Warm Amber) */
+  --quantum-cyan: #06b6d4;       /* Superposition Phase Wave (|ψ⟩) */
+  --quantum-state-0: #10b981;    /* Ground State |0⟩ (Emerald) */
+  --quantum-state-1: #f43f5e;    /* Excited State |1⟩ (Crimson/Ruby) */
+  --quantum-rejected: #ef4444;   /* Modulo Rejection Tag */
+  --quantum-accepted: #3b82f6;   /* Validated Character Chunk */
+
+  /* Spacing Scale */
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Layout */
+  --panel-radius: 4px;           /* Sharp, milled-edge bevel */
+  --input-radius: 3px;
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-medium: 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 2. Global Resets & Document Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Instrument Grid Texture Background (Subtle Lab Grid) */
+body {
+  background-image: 
+    linear-gradient(to right, rgba(30, 36, 54, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 36, 54, 0.25) 1px, transparent 1px);
+  background-size: 32px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3. Header & Instrument Banner */
+.instrument-header {
+  border-bottom: 1px solid var(--border-dim);
+  background-color: var(--bg-surface);
+  padding: var(--space-md) var(--space-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand-bay {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.hardware-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--quantum-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.05);
+  padding: 3px 8px;
+  border-radius: var(--panel-radius);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.instrument-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.instrument-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-beacon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--quantum-state-0);
+  box-shadow: 0 0 8px var(--quantum-state-0);
+  animation: pulseBeacon 2s infinite ease-in-out;
+}
+
+@keyframes pulseBeacon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* 4. Main Instrument Workspace */
+.instrument-workspace {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-xl);
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+/* 5. Control Panel & Sidebar */
+.control-rack {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--panel-radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-dim);
+  background-color: var(--bg-surface-sunken);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.panel-body {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Controls: Sliders and Readouts */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.control-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.control-readout {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--quantum-gold);
+}
+
+/* Precision Range Slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  outline: none;
+  margin: var(--space-xs) 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--quantum-gold);
+  border: 2px solid var(--bg-void);
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+  transition: transform var(--transition-fast);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Charset Checkboxes / Switches */
+.checkbox-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border: 1px solid var(--border-dim);
+  background-color: var(--bg-surface-sunken);
+  padding: var(--space-sm);
+  border-radius: var(--panel-radius);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 6px;
+  border-radius: var(--input-radius);
+  transition: background-color var(--transition-fast);
+}
+
+.checkbox-row:hover {
+  background-color: var(--bg-surface-elevated);
+}
+
+.checkbox-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  background-color: var(--bg-surface);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.checkbox-row input[type="checkbox"]:checked {
+  background-color: var(--quantum-cyan);
+  border-color: var(--quantum-cyan);
+}
+
+.checkbox-row input[type="checkbox"]:checked::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: var(--bg-void);
+  clip-path: polygon(14% 44%, 0 60%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.checkbox-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.charset-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Custom Charset Input */
+.text-input-field {
+  width: 100%;
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--input-radius);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: var(--space-xs) var(--space-sm);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.text-input-field:focus {
+  border-color: var(--quantum-cyan);
+}
+
+/* Primary Execution Trigger Button */
+.btn-primary-trigger {
+  width: 100%;
+  padding: var(--space-md);
+  background-color: var(--bg-surface-elevated);
+  color: var(--quantum-gold);
+  border: 1px solid var(--quantum-gold);
+  border-radius: var(--panel-radius);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+}
+
+.btn-primary-trigger:hover:not(:disabled) {
+  background-color: var(--quantum-gold);
+  color: var(--bg-void);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+}
+
+.btn-primary-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--border-subtle);
+  color: var(--text-tertiary);
+  box-shadow: none;
+}
+
+.btn-primary-trigger.running {
+  background-color: rgba(6, 182, 212, 0.1);
+  border-color: var(--quantum-cyan);
+  color: var(--quantum-cyan);
+}
+
+/* 6. Telemetry Grid */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.telemetry-node {
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--panel-radius);
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.telemetry-node.highlight-node {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.telemetry-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: 2px;
+}
+
+.telemetry-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.telemetry-value.gold { color: var(--quantum-gold); }
+.telemetry-value.cyan { color: var(--quantum-cyan); }
+.telemetry-value.emerald { color: var(--quantum-state-0); }
+.telemetry-value.ruby { color: var(--quantum-rejected); }
+
+/* 7. Output Stage & Terminal */
+.output-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.key-dispenser-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--panel-radius);
+  overflow: hidden;
+}
+
+.password-readout-bar {
+  padding: var(--space-lg);
+  background-color: var(--bg-surface-sunken);
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  border-bottom: 1px solid var(--border-dim);
+}
+
+.password-display-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--quantum-gold);
+}
+
+.password-display-input::placeholder {
+  color: var(--text-tertiary);
+  font-size: 15px;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--input-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  border-color: var(--quantum-cyan);
+  color: var(--quantum-cyan);
+}
+
+.btn-secondary.copied {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: var(--quantum-state-0);
+  color: var(--quantum-state-0);
+}
+
+/* 8. Qubit Visualizer & Superposition Collapse Display */
+.visualizer-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--panel-radius);
+  overflow: hidden;
+}
+
+.visualizer-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-dim);
+  background-color: var(--bg-surface-sunken);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tab-selector-bar {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--input-radius);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+
+.tab-btn.active {
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--border-subtle);
+  color: var(--quantum-gold);
+}
+
+/* Qubit Grid Register */
+.qubit-register-grid {
+  padding: var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--space-sm);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* Individual Qubit Instrument Element */
+.qubit-chip {
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--input-radius);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.qubit-chip.accepted-chunk {
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.qubit-chip.rejected-chunk {
+  border-color: rgba(239, 68, 68, 0.35);
+  background-color: rgba(239, 68, 68, 0.03);
+}
+
+.qubit-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+/* Superposition indicator vs Collapsed State */
+.qubit-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  transition: all var(--transition-medium);
+}
+
+/* Superposition State (Oscillating Coherent Wave) */
+.qubit-indicator.superposition {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(245, 158, 11, 0.2));
+  border: 1px solid var(--quantum-cyan);
+  color: var(--quantum-cyan);
+  animation: quantumSuperpositionOscillate 1.2s infinite ease-in-out;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+}
+
+@keyframes quantumSuperpositionOscillate {
+  0%, 100% {
+    filter: blur(0px);
+    transform: scale(1);
+    border-color: var(--quantum-cyan);
+  }
+  50% {
+    filter: blur(1.5px);
+    transform: scale(0.92);
+    border-color: var(--quantum-gold);
+  }
+}
+
+/* Collapsed State 0 (Ground |0⟩) */
+.qubit-indicator.state-0 {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--quantum-state-0);
+  color: var(--quantum-state-0);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
+  animation: collapseFlash 0.35s ease-out;
+}
+
+/* Collapsed State 1 (Excited |1⟩) */
+.qubit-indicator.state-1 {
+  background-color: rgba(244, 63, 94, 0.15);
+  border: 1px solid var(--quantum-state-1);
+  color: var(--quantum-state-1);
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.25);
+  animation: collapseFlash 0.35s ease-out;
+}
+
+@keyframes collapseFlash {
+  0% { transform: scale(1.3); filter: brightness(2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.qubit-tag {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+.qubit-tag.char-badge {
+  font-weight: 700;
+  color: var(--quantum-gold);
+}
+
+.qubit-tag.discard-badge {
+  color: var(--quantum-rejected);
+  text-decoration: line-through;
+}
+
+/* 9. Rejection Sampling Table (Scientific Trace) */
+.sampling-trace-view {
+  padding: var(--space-lg);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.instrument-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.instrument-table th {
+  text-align: left;
+  padding: 8px var(--space-sm);
+  background-color: var(--bg-surface-sunken);
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border-dim);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.instrument-table td {
+  padding: 8px var(--space-sm);
+  border-bottom: 1px solid var(--border-dim);
+  color: var(--text-primary);
+}
+
+.instrument-table tr.accepted-row td {
+  background-color: rgba(59, 130, 246, 0.03);
+}
+
+.instrument-table tr.rejected-row td {
+  background-color: rgba(239, 68, 68, 0.05);
+  color: var(--text-secondary);
+}
+
+.badge-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-tag.accept {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: var(--quantum-state-0);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-tag.reject {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--quantum-rejected);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* 10. Circuit Diagram & QASM Viewer */
+.circuit-display-view {
+  padding: var(--space-lg);
+  background-color: var(--bg-surface-sunken);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  min-height: 280px;
+}
+
+.circuit-display-view svg {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--panel-radius);
+  background-color: #ffffff;
+  padding: var(--space-sm);
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.code-terminal-view {
+  padding: var(--space-lg);
+  background-color: var(--bg-surface-sunken);
+  overflow-x: auto;
+  max-height: 480px;
+}
+
+.code-terminal-view pre {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--quantum-cyan);
+  line-height: 1.6;
+}
+
+/* Error Banner */
+.error-banner {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--quantum-rejected);
+  color: var(--quantum-rejected);
+  padding: var(--space-sm);
+  border-radius: var(--panel-radius);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  display: none;
+}
+
+.error-banner.visible {
+  display: block;
+}
+
+/* 11. Footer */
+.instrument-footer {
+  border-top: 1px solid var(--border-dim);
+  background-color: var(--bg-surface);
+  padding: var(--space-md) var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Responsive adjustment */
+@media (max-width: 1024px) {
+  .instrument-workspace {
+    grid-template-columns: 1fr;
+  }
+}

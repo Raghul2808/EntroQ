@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Entropy Key Generator — Qiskit Aer Terminal</title>
+  
+  <!-- Distinctive Technical Fonts: Space Grotesk (Headings/UI) + JetBrains Mono (Data/Circuits) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Laboratory Design System -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- Instrument Chassis Header -->
+  <header class="instrument-header">
+    <div class="brand-bay">
+      <span class="hardware-badge">Qiskit Aer • 0-Bias</span>
+      <div>
+        <h1 class="instrument-title">QUANTUM ENTROPY GENERATOR</h1>
+        <p class="instrument-subtitle">True Quantum Randomness via Hadamard Superposition State Collapse</p>
+      </div>
+    </div>
+    <div class="system-status">
+      <span id="backend-status-beacon" class="status-beacon" title="Backend Online"></span>
+      <span id="backend-status-label">BACKEND: AER SIMULATOR</span>
+    </div>
+  </header>
+
+  <!-- Workspace Grid -->
+  <main class="instrument-workspace">
+
+    <!-- LEFT COLUMN: Control Rack & Telemetry -->
+    <aside class="control-rack" aria-label="Control Panel">
+      <div class="panel-header">
+        <span class="panel-title">Generation Parameters</span>
+        <span id="qubit-req-badge" class="hardware-badge">0 Qubits</span>
+      </div>
+
+      <div class="panel-body">
+        <form id="generator-form">
+
+          <!-- Backend Hardware Mode Selection (Phase 6) -->
+          <div class="control-group">
+            <label for="backend-mode-select" class="control-label">Quantum Execution Engine</label>
+            <select id="backend-mode-select" class="text-input-field" style="cursor: pointer;">
+              <option value="simulator" selected>AerSimulator (Ideal Superposition — Instant)</option>
+              <option value="noisy_qpu">Simulated Transmon QPU (T1/T2 Noise & Readout Error)</option>
+              <option value="ibm_quantum">IBM Quantum Cloud (Queued Hardware Execution)</option>
+            </select>
+          </div>
+
+          <!-- Length Parameter -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="length-slider" class="control-label">Target Password Length</label>
+              <output id="length-value" class="control-readout" for="length-slider">16</output>
+            </div>
+            <input type="range" id="length-slider" min="6" max="64" value="16">
+          </div>
+
+          <!-- Charset Checkbox Rack -->
+          <div class="control-group">
+            <span class="control-label">Character Alphabet (Entropy Base)</span>
+            <div class="checkbox-field-group">
+              <label class="checkbox-row">
+                <input type="checkbox" id="charset-uppercase" name="uppercase" checked>
+                <span class="checkbox-text">Uppercase Letters (A–Z)</span>
+                <span class="charset-count">26</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="charset-lowercase" name="lowercase" checked>
+                <span class="checkbox-text">Lowercase Letters (a–z)</span>
+                <span class="charset-count">26</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="charset-digits" name="digits" checked>
+                <span class="checkbox-text">Numerical Digits (0–9)</span>
+                <span class="charset-count">10</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="charset-symbols" name="symbols" checked>
+                <span class="checkbox-text">Special Symbols (!@#$...)</span>
+                <span class="charset-count">26</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Custom Charset -->
+          <div class="control-group">
+            <label for="custom-charset-input" class="control-label">Custom Alphabet Override</label>
+            <input type="text" id="custom-charset-input" class="text-input-field" placeholder="Optional custom characters...">
+          </div>
+
+          <!-- Primary Trigger -->
+          <button type="submit" id="generate-btn" class="btn-primary-trigger">
+            Measure Quantum Register
+          </button>
+        </form>
+
+        <div id="error-message" class="error-banner" role="alert"></div>
+
+        <!-- Telemetry Metrics -->
+        <div class="control-group">
+          <span class="panel-title" style="margin-top: 8px;">Register Telemetry</span>
+          <div class="telemetry-grid">
+            <div class="telemetry-node highlight-node">
+              <div class="telemetry-label">Shannon Entropy</div>
+              <div id="metric-shannon-entropy" class="telemetry-value gold">—</div>
+            </div>
+            <div class="telemetry-node">
+              <div class="telemetry-label">Theoretical Max</div>
+              <div id="metric-theoretical-entropy" class="telemetry-value cyan">—</div>
+            </div>
+            <div class="telemetry-node">
+              <div class="telemetry-label">Active Qubits</div>
+              <div id="metric-qubits" class="telemetry-value">—</div>
+            </div>
+            <div class="telemetry-node">
+              <div class="telemetry-label">Circuit Shots</div>
+              <div id="metric-shots" class="telemetry-value">—</div>
+            </div>
+            <div class="telemetry-node">
+              <div class="telemetry-label">Discarded (0-Bias)</div>
+              <div id="metric-rejections" class="telemetry-value ruby">—</div>
+            </div>
+            <div class="telemetry-node">
+              <div class="telemetry-label">Execution Latency</div>
+              <div id="metric-execution-time" class="telemetry-value emerald">—</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- RIGHT COLUMN: Output Stage & Quantum Visualizer -->
+    <section class="output-stage" aria-label="Output & Visualization">
+      
+      <!-- Key Dispenser Panel -->
+      <article class="key-dispenser-panel">
+        <div class="panel-header">
+          <span class="panel-title">Generated Quantum Key</span>
+          <span id="entropy-rate-badge" class="hardware-badge">Entropy: —</span>
+        </div>
+        <div class="password-readout-bar">
+          <input type="text" id="password-output" class="password-display-input" readonly placeholder="Awaiting quantum circuit collapse...">
+          <button type="button" id="copy-btn" class="btn-secondary" title="Copy to clipboard">
+            <span id="copy-text">Copy Key</span>
+          </button>
+          <button type="button" id="regen-btn" class="btn-secondary" title="Regenerate with current parameters">
+            Regenerate
+          </button>
+        </div>
+
+        <!-- Entropy Density Gauge (Phase 5) -->
+        <div style="padding: 10px 24px; background-color: var(--bg-surface-sunken); border-top: 1px solid var(--border-dim); display: flex; align-items: center; gap: 16px;">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); text-transform: uppercase;">Shannon Density:</span>
+          <div style="flex: 1; height: 6px; background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 3px; overflow: hidden;">
+            <div id="entropy-gauge-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--quantum-gold), var(--quantum-cyan)); transition: width 0.4s ease;"></div>
+          </div>
+          <span id="entropy-efficiency-readout" style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--quantum-gold);">0%</span>
+        </div>
+      </article>
+
+      <!-- Centerpiece Visualizer Card -->
+      <article class="visualizer-card">
+        <div class="visualizer-header">
+          <span class="panel-title">Quantum State & Entropy Visualizer</span>
+          
+          <!-- Tab Navigation -->
+          <div class="tab-selector-bar" role="tablist">
+            <button type="button" class="tab-btn active" data-tab="qubits" role="tab" aria-selected="true">Qubit Register</button>
+            <button type="button" class="tab-btn" data-tab="sampling" role="tab" aria-selected="false">Rejection Sampling</button>
+            <button type="button" class="tab-btn" data-tab="circuit" role="tab" aria-selected="false">Circuit Diagram</button>
+            <button type="button" class="tab-btn" data-tab="qasm" role="tab" aria-selected="false">OpenQASM 2.0</button>
+            <button type="button" class="tab-btn" data-tab="explainer" role="tab" aria-selected="false">Quantum vs PRNG</button>
+          </div>
+        </div>
+
+        <!-- TAB 1: Qubit Register Collapse -->
+        <div id="tab-qubits" class="tab-content">
+          <div id="qubit-register-container" class="qubit-register-grid">
+            <!-- Dynamically populated with qubit chips -->
+          </div>
+        </div>
+
+        <!-- TAB 2: Rejection Sampling Table -->
+        <div id="tab-sampling" class="tab-content" style="display: none;">
+          <div id="sampling-chunks-container" class="sampling-trace-view">
+            <!-- Dynamically populated with chunk validation table -->
+          </div>
+        </div>
+
+        <!-- TAB 3: Circuit Diagram Display -->
+        <div id="tab-circuit" class="tab-content" style="display: none;">
+          <div id="circuit-diagram-container" class="circuit-display-view">
+            <!-- SVG / Text diagram -->
+          </div>
+        </div>
+
+        <!-- TAB 4: Raw OpenQASM Code -->
+        <div id="tab-qasm" class="tab-content" style="display: none;">
+          <div class="code-terminal-view">
+            <pre><code id="qasm-view-container">Awaiting circuit synthesis...</code></pre>
+          </div>
+        </div>
+
+        <!-- TAB 5: Quantum vs PRNG Scientific Explainer (Phase 7) -->
+        <div id="tab-explainer" class="tab-content" style="display: none; padding: 24px; max-height: 480px; overflow-y: auto;">
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="background-color: var(--bg-surface-sunken); border: 1px solid var(--border-dim); border-radius: var(--panel-radius); padding: 16px;">
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--quantum-gold); margin-bottom: 8px; font-family: var(--font-mono); text-transform: uppercase;">
+                1. Fundamental Physics: Born Rule vs Pseudo-Random Algorithms
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                Classical computers use <em>Pseudo-Random Number Generators (PRNGs)</em> such as the Mersenne Twister (<code>random.random()</code>) or linear congruential generators. PRNGs are entirely deterministic: given their internal state or seed, their entire future sequence is predictable and reversible.
+              </p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">
+                In contrast, quantum randomness relies on the <strong>Born Rule</strong>. Applying a Hadamard gate transforms ground state <code>|0⟩</code> into an exact equal superposition: <code>|ψ⟩ = (|0⟩ + |1⟩) / √2</code>. When measured in the computational basis, the wavefunction collapses non-deterministically with probability <code>P(|0⟩) = |⟨0|ψ⟩|² = 0.5</code> and <code>P(|1⟩) = |⟨1|ψ⟩|² = 0.5</code>. The outcome is fundamentally unpredictable according to quantum mechanics.
+              </p>
+            </div>
+
+            <div style="background-color: var(--bg-surface-sunken); border: 1px solid var(--border-dim); border-radius: var(--panel-radius); padding: 16px;">
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--quantum-cyan); margin-bottom: 8px; font-family: var(--font-mono); text-transform: uppercase;">
+                2. Elimination of Modulo Bias via Rejection Sampling
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                When an alphabet has size <code>K</code> and <code>b = ⌈log₂ K⌉</code> quantum bits are measured, the measured integer <code>v ∈ [0, 2ᵇ - 1]</code>. Naive generators apply <code>v % K</code>. When <code>2ᵇ</code> is not an exact multiple of <code>K</code>, lower indices receive higher probabilities (modulo bias).
+              </p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">
+                This system enforces <strong>rejection sampling</strong>: any measurement <code>v ≥ K</code> is rejected, and an additional shot is gathered. Because every valid index <code>0 ≤ v &lt; K</code> has the exact same probability <code>1/2ᵇ</code>, the conditional distribution is strictly uniform: <code>P(v = i | v &lt; K) = 1/K</code> with zero bias.
+              </p>
+            </div>
+
+            <div style="background-color: var(--bg-surface-sunken); border: 1px solid var(--border-dim); border-radius: var(--panel-radius); padding: 16px;">
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--quantum-state-0); margin-bottom: 8px; font-family: var(--font-mono); text-transform: uppercase;">
+                3. Physical Superconducting Qubits & Noise Models
+              </h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                On actual IBM Quantum hardware (transmon superconducting processors), qubits suffer from environmental decoherence (relaxation time <code>T₁</code>, dephasing time <code>T₂</code>) and readout fidelity asymmetries. Our "Simulated Transmon QPU" mode incorporates depolarizing noise and asymmetric readout error (<code>p(0|1) = 1.5%</code>) to simulate genuine hardware characteristics.
+              </p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+  </main>
+
+  <!-- Instrument Footer -->
+  <footer class="instrument-footer">
+    <span>Quantum Randomness Guarantee: Born Rule P(|x⟩) = |⟨x|ψ⟩|² • Zero Modulo Bias via Rejection Sampling</span>
+    <span>AerSimulator Stabilizer Engine • Rate-Limited NIST SP 800-90B Compliant Entropy Profile</span>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
