@@ -157,39 +157,6 @@ Applies **Pearson's Chi-squared Goodness-of-Fit Test** ($\alpha = 0.01$) over sa
 
 ---
 
-## 🌐 Free Hosting & Deployment Guide
-
-Because QuantGen utilizes **Qiskit Aer** (which relies on compiled scientific C++ binaries and NumPy/SciPy), containerized or Python-native platforms are recommended over serverless platforms that have strict bundle size limits (e.g. Vercel's 250MB uncompressed limit).
-
-### Option 1: Render (Recommended — 100% Free Web Service)
-1. Fork or push this repository to your GitHub account.
-2. Sign in to [Render](https://render.com/).
-3. Click **New +** → **Blueprint** and connect your `QuantGen` repository (it will automatically read [render.yaml](render.yaml)).
-4. Or create a **Web Service**:
-   * **Environment**: `Python 3`
-   * **Build Command**: `pip install -r requirements.txt`
-   * **Start Command**: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
-5. Your service will be live at `https://quantgen-<unique-id>.onrender.com`.
-
-### Option 2: Hugging Face Spaces (100% Free Docker Tier)
-Hugging Face Spaces provides a free 16GB RAM CPU container ideal for scientific quantum libraries:
-1. Create a new Space on [Hugging Face](https://huggingface.co/spaces).
-2. Choose **Docker** as the Space SDK.
-3. Link your GitHub repository or push this code to the Space's Git remote.
-4. The included [Dockerfile](Dockerfile) will build and expose port `7860` or `8000`.
-
-### Option 3: Railway
-1. Sign up on [Railway](https://railway.app/).
-2. Click **New Project** → **Deploy from GitHub repo**.
-3. Select `QuantGen`. Railway uses [railway.toml](railway.toml) to configure Nixpacks and launch the app automatically.
-
-### Option 4: Vercel (Decoupled Frontend)
-If you prefer hosting the static frontend on Vercel:
-1. Deploy the `frontend/` folder to Vercel as a static site.
-2. Deploy the `backend/` to Render, Railway, or Hugging Face.
-3. Update the API base URL in `frontend/app.js` to point to your live backend service.
-
----
 
 ## 📡 API Reference
 
