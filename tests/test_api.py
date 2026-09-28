@@ -141,3 +141,22 @@ def test_rate_limiter():
     assert exc_info.value.status_code == 429
     assert "Rate limit exceeded" in exc_info.value.detail
 
+
+def test_benchmark_endpoints():
+    # Test head-to-head comparison
+    resp = client.post("/benchmark/compare", json={"length": 8})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "quantum" in data
+    assert "classical_prng" in data
+    assert data["quantum"]["modulo_bias"] == "0.00% (Rejection Sampling enforced)"
+
+    # Test modulo bias sandbox
+    resp_sandbox = client.get("/benchmark/modulo-bias?charset_size=10&sample_count=500")
+    assert resp_sandbox.status_code == 200
+    sandbox = resp_sandbox.json()
+    assert len(sandbox["naive_modulo"]["bins"]) == 10
+    assert len(sandbox["rejection_sampling"]["bins"]) == 10
+    assert sandbox["rejection_sampling"]["is_uniform"] is True
+
+

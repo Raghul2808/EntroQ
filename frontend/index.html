@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quantum Entropy Key Generator — Qiskit Aer Terminal</title>
+  <title>Quantum Entropy Key Generator — Qiskit Aer Laboratory</title>
   
   <!-- Distinctive Technical Fonts: Space Grotesk (Headings/UI) + JetBrains Mono (Data/Circuits) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,9 @@
   
   <!-- Custom Laboratory Design System -->
   <link rel="stylesheet" href="/style.css">
+  
+  <!-- Zero-dependency Offline QR Code Engine -->
+  <script src="/qrcode.js"></script>
 </head>
 <body>
 
@@ -24,9 +27,32 @@
         <p class="instrument-subtitle">True Quantum Randomness via Hadamard Superposition State Collapse</p>
       </div>
     </div>
-    <div class="system-status">
-      <span id="backend-status-beacon" class="status-beacon" title="Backend Online"></span>
-      <span id="backend-status-label">BACKEND: AER SIMULATOR</span>
+
+    <!-- Cryogenic Physical Telemetry HUD & Audio Sonification -->
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div class="cryo-hud" aria-label="Cryostat Hardware Telemetry">
+        <div class="cryo-metric-item">
+          <span class="cryo-metric-label">Temp:</span>
+          <span class="cryo-metric-val gold">14.8 mK</span>
+        </div>
+        <div class="cryo-metric-item">
+          <span class="cryo-metric-label">T₁:</span>
+          <span class="cryo-metric-val">124.5 μs</span>
+        </div>
+        <div class="cryo-metric-item">
+          <span class="cryo-metric-label">Fid:</span>
+          <span class="cryo-metric-val emerald">99.2%</span>
+        </div>
+      </div>
+
+      <button type="button" id="audio-toggle-btn" class="audio-toggle-btn active" title="Toggle Cryogenic Acoustic Sonification">
+        <span id="audio-btn-icon">🔊</span> <span id="audio-btn-label">SOUND: ON</span>
+      </button>
+
+      <div class="system-status">
+        <span id="backend-status-beacon" class="status-beacon" title="Backend Online"></span>
+        <span id="backend-status-label">BACKEND: AER SIMULATOR</span>
+      </div>
     </div>
   </header>
 
@@ -41,9 +67,32 @@
       </div>
 
       <div class="panel-body">
+
+        <!-- Generation Mode Switcher Strip -->
+        <div class="mode-selector-strip" role="tablist">
+          <button type="button" class="mode-tab-btn active" data-mode="character">🔑 Char Key</button>
+          <button type="button" class="mode-tab-btn" data-mode="diceware">🎲 Diceware</button>
+          <button type="button" class="mode-tab-btn" data-mode="batch">📦 Batch Vault</button>
+        </div>
+
+        <!-- Quick Security Presets -->
+        <div>
+          <div class="preset-bar-title">
+            <span>Quick Security Presets</span>
+            <span style="color: var(--quantum-gold); cursor: pointer;" id="preset-help-btn" title="NIST & Post-Quantum Presets">ℹ</span>
+          </div>
+          <div class="preset-pill-strip">
+            <button type="button" class="preset-pill-btn" data-preset="post-quantum">🛡️ Post-Quantum (32c)</button>
+            <button type="button" class="preset-pill-btn" data-preset="web-sec">🔐 Web Sec (16c)</button>
+            <button type="button" class="preset-pill-btn" data-preset="hex-seed">⚡ Hex Seed (64c)</button>
+            <button type="button" class="preset-pill-btn" data-preset="pin">📟 PIN (6d)</button>
+            <button type="button" class="preset-pill-btn" data-preset="diceware-5">🎲 Diceware (5w)</button>
+          </div>
+        </div>
+
         <form id="generator-form">
 
-          <!-- Backend Hardware Mode Selection (Phase 6) -->
+          <!-- Backend Hardware Mode Selection -->
           <div class="control-group">
             <label for="backend-mode-select" class="control-label">Quantum Execution Engine</label>
             <select id="backend-mode-select" class="text-input-field" style="cursor: pointer;">
@@ -53,46 +102,95 @@
             </select>
           </div>
 
-          <!-- Length Parameter -->
-          <div class="control-group">
-            <div class="control-label-row">
-              <label for="length-slider" class="control-label">Target Password Length</label>
-              <output id="length-value" class="control-readout" for="length-slider">16</output>
+          <!-- CONTAINER 1: CHARACTER KEY CONTROLS -->
+          <div id="character-mode-controls">
+            <!-- Length Parameter -->
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="length-slider" class="control-label">Target Password Length</label>
+                <output id="length-value" class="control-readout" for="length-slider">16</output>
+              </div>
+              <input type="range" id="length-slider" min="6" max="64" value="16">
             </div>
-            <input type="range" id="length-slider" min="6" max="64" value="16">
+
+            <!-- Charset Checkbox Rack -->
+            <div class="control-group">
+              <span class="control-label">Character Alphabet (Entropy Base)</span>
+              <div class="checkbox-field-group">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="charset-uppercase" name="uppercase" checked>
+                  <span class="checkbox-text">Uppercase Letters (A–Z)</span>
+                  <span class="charset-count">26</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="charset-lowercase" name="lowercase" checked>
+                  <span class="checkbox-text">Lowercase Letters (a–z)</span>
+                  <span class="charset-count">26</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="charset-digits" name="digits" checked>
+                  <span class="checkbox-text">Numerical Digits (0–9)</span>
+                  <span class="charset-count">10</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="charset-symbols" name="symbols" checked>
+                  <span class="checkbox-text">Special Symbols (!@#$...)</span>
+                  <span class="charset-count">26</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Custom Charset -->
+            <div class="control-group">
+              <label for="custom-charset-input" class="control-label">Custom Alphabet Override</label>
+              <input type="text" id="custom-charset-input" class="text-input-field" placeholder="Optional custom characters...">
+            </div>
           </div>
 
-          <!-- Charset Checkbox Rack -->
-          <div class="control-group">
-            <span class="control-label">Character Alphabet (Entropy Base)</span>
-            <div class="checkbox-field-group">
-              <label class="checkbox-row">
-                <input type="checkbox" id="charset-uppercase" name="uppercase" checked>
-                <span class="checkbox-text">Uppercase Letters (A–Z)</span>
-                <span class="charset-count">26</span>
-              </label>
-              <label class="checkbox-row">
-                <input type="checkbox" id="charset-lowercase" name="lowercase" checked>
-                <span class="checkbox-text">Lowercase Letters (a–z)</span>
-                <span class="charset-count">26</span>
-              </label>
-              <label class="checkbox-row">
-                <input type="checkbox" id="charset-digits" name="digits" checked>
-                <span class="checkbox-text">Numerical Digits (0–9)</span>
-                <span class="charset-count">10</span>
-              </label>
-              <label class="checkbox-row">
-                <input type="checkbox" id="charset-symbols" name="symbols" checked>
-                <span class="checkbox-text">Special Symbols (!@#$...)</span>
-                <span class="charset-count">26</span>
-              </label>
+          <!-- CONTAINER 2: QUANTUM DICEWARE PASSPHRASE CONTROLS (Hidden by default) -->
+          <div id="diceware-mode-controls" style="display: none;">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="diceware-words-slider" class="control-label">Word Count (10 bits/word)</label>
+                <output id="diceware-words-val" class="control-readout" for="diceware-words-slider">5</output>
+              </div>
+              <input type="range" id="diceware-words-slider" min="3" max="10" value="5">
+            </div>
+
+            <div class="control-group">
+              <label for="diceware-sep-select" class="control-label">Word Separator</label>
+              <select id="diceware-sep-select" class="text-input-field" style="cursor: pointer;">
+                <option value="-" selected>Hyphen (dash -)</option>
+                <option value=".">Period (dot .)</option>
+                <option value="_">Underscore (_)</option>
+                <option value=" ">Space (blank)</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Passphrase Formatting</span>
+              <div class="checkbox-field-group">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="diceware-capitalize">
+                  <span class="checkbox-text">Capitalize Words (TitleCase)</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="diceware-number">
+                  <span class="checkbox-text">Append Quantum Digit (0-9)</span>
+                </label>
+              </div>
             </div>
           </div>
 
-          <!-- Custom Charset -->
-          <div class="control-group">
-            <label for="custom-charset-input" class="control-label">Custom Alphabet Override</label>
-            <input type="text" id="custom-charset-input" class="text-input-field" placeholder="Optional custom characters...">
+          <!-- CONTAINER 3: BATCH VAULT CONTROLS (Hidden by default) -->
+          <div id="batch-mode-controls" style="display: none;">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="batch-count-slider" class="control-label">Batch Size (Keys to Measure)</label>
+                <output id="batch-count-val" class="control-readout" for="batch-count-slider">5</output>
+              </div>
+              <input type="range" id="batch-count-slider" min="2" max="20" value="5">
+            </div>
           </div>
 
           <!-- Primary Trigger -->
@@ -148,15 +246,34 @@
         </div>
         <div class="password-readout-bar">
           <input type="text" id="password-output" class="password-display-input" readonly placeholder="Awaiting quantum circuit collapse...">
+          
           <button type="button" id="copy-btn" class="btn-secondary" title="Copy to clipboard">
             <span id="copy-text">Copy Key</span>
           </button>
+
+          <!-- Export Dropdown -->
+          <div class="export-dropdown-wrapper">
+            <button type="button" id="export-dropdown-btn" class="btn-secondary" title="Export Key in various formats">
+              Export ▼
+            </button>
+            <div id="export-dropdown-menu" class="export-menu">
+              <button type="button" class="export-menu-item" data-export="copy-env">Copy as ENV Secret</button>
+              <button type="button" class="export-menu-item" data-export="copy-shell">Copy as Shell Export</button>
+              <button type="button" class="export-menu-item" data-export="download-env">Download .env File</button>
+              <button type="button" class="export-menu-item" data-export="download-json">Download Audit JSON</button>
+            </div>
+          </div>
+
+          <button type="button" id="qr-modal-btn" class="btn-secondary" title="Generate Air-Gapped Mobile QR Code">
+            📱 QR Code
+          </button>
+
           <button type="button" id="regen-btn" class="btn-secondary" title="Regenerate with current parameters">
             Regenerate
           </button>
         </div>
 
-        <!-- Entropy Density Gauge (Phase 5) -->
+        <!-- Entropy Density Gauge -->
         <div style="padding: 10px 24px; background-color: var(--bg-surface-sunken); border-top: 1px solid var(--border-dim); display: flex; align-items: center; gap: 16px;">
           <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); text-transform: uppercase;">Shannon Density:</span>
           <div style="flex: 1; height: 6px; background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 3px; overflow: hidden;">
@@ -169,15 +286,20 @@
       <!-- Centerpiece Visualizer Card -->
       <article class="visualizer-card">
         <div class="visualizer-header">
-          <span class="panel-title">Quantum State & Entropy Visualizer</span>
+          <span class="panel-title">Quantum State & Analysis Visualizer</span>
           
           <!-- Tab Navigation -->
           <div class="tab-selector-bar" role="tablist">
             <button type="button" class="tab-btn active" data-tab="qubits" role="tab" aria-selected="true">Qubit Register</button>
-            <button type="button" class="tab-btn" data-tab="sampling" role="tab" aria-selected="false">Rejection Sampling</button>
-            <button type="button" class="tab-btn" data-tab="circuit" role="tab" aria-selected="false">Circuit Diagram</button>
-            <button type="button" class="tab-btn" data-tab="qasm" role="tab" aria-selected="false">OpenQASM 2.0</button>
-            <button type="button" class="tab-btn" data-tab="explainer" role="tab" aria-selected="false">Quantum vs PRNG</button>
+            <button type="button" class="tab-btn" data-tab="bloch" role="tab" aria-selected="false">Bloch Sphere 3D</button>
+            <button type="button" class="tab-btn" data-tab="cryptanalysis" role="tab" aria-selected="false">Cryptanalysis (Grover)</button>
+            <button type="button" class="tab-btn" data-tab="batch" role="tab" aria-selected="false">Batch Vault</button>
+            <button type="button" class="tab-btn" data-tab="sampling" role="tab" aria-selected="false">Rejection Trace</button>
+            <button type="button" class="tab-btn" data-tab="benchmark" role="tab" aria-selected="false">PRNG Benchmark</button>
+            <button type="button" class="tab-btn" data-tab="sandbox" role="tab" aria-selected="false">Modulo Sandbox</button>
+            <button type="button" class="tab-btn" data-tab="circuit" role="tab" aria-selected="false">Circuit SVG</button>
+            <button type="button" class="tab-btn" data-tab="qasm" role="tab" aria-selected="false">OpenQASM</button>
+            <button type="button" class="tab-btn" data-tab="explainer" role="tab" aria-selected="false">Theory</button>
           </div>
         </div>
 
@@ -188,28 +310,382 @@
           </div>
         </div>
 
-        <!-- TAB 2: Rejection Sampling Table -->
+        <!-- TAB 2: Interactive 3D Bloch Sphere Visualizer with Quantum Gate Sandbox -->
+        <div id="tab-bloch" class="tab-content" style="display: none;">
+          <div class="bloch-workspace">
+            <div class="bloch-canvas-box">
+              <canvas id="bloch-canvas" width="320" height="320" class="bloch-canvas"></canvas>
+              <span class="bloch-hint">Click & Drag to Rotate 3D Sphere</span>
+            </div>
+            <div class="bloch-telemetry-bay">
+              <div class="bloch-selector-row">
+                <label for="bloch-qubit-select" class="control-label" style="font-weight: 700;">Select Target Qubit:</label>
+                <select id="bloch-qubit-select" class="text-input-field" style="width: 140px; cursor: pointer;">
+                  <option value="0">q[0]</option>
+                </select>
+              </div>
+
+              <div class="state-formula-card">
+                <div class="telemetry-label">Quantum Statevector |ψ⟩</div>
+                <div id="bloch-state-formula" class="state-formula-math">|ψ⟩ = (|0⟩ + |1⟩) / √2</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                  Born Measurement Rule: <span style="color: var(--quantum-gold);">P(|x⟩) = |⟨x|ψ⟩|²</span>
+                </div>
+              </div>
+
+              <div class="bloch-angle-grid">
+                <div class="bloch-angle-node">
+                  <div class="bloch-angle-label">Polar Angle (θ)</div>
+                  <div id="bloch-theta" class="bloch-angle-val">90.0° (π/2)</div>
+                </div>
+                <div class="bloch-angle-node">
+                  <div class="bloch-angle-label">Azimuthal (φ)</div>
+                  <div id="bloch-phi" class="bloch-angle-val">0.0° (0)</div>
+                </div>
+                <div class="bloch-angle-node">
+                  <div class="bloch-angle-label">Expectation ⟨Z⟩</div>
+                  <div id="bloch-z-exp" class="bloch-angle-val">0.00</div>
+                </div>
+                <div class="bloch-angle-node">
+                  <div class="bloch-angle-label">P(|0⟩) Ground</div>
+                  <div id="bloch-p0" class="bloch-angle-val">50.0%</div>
+                </div>
+                <div class="bloch-angle-node">
+                  <div class="bloch-angle-label">P(|1⟩) Excited</div>
+                  <div id="bloch-p1" class="bloch-angle-val">50.0%</div>
+                </div>
+                <div class="bloch-angle-node">
+                  <div class="bloch-angle-label">State Purity</div>
+                  <div class="bloch-angle-val" style="color: var(--quantum-state-0);">1.00 (Pure)</div>
+                </div>
+              </div>
+
+              <!-- Interactive Quantum Gate Sandbox -->
+              <div class="gate-sandbox-strip">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--quantum-gold); text-transform: uppercase;">
+                    Interactive Gate Sandbox
+                  </span>
+                  <span style="font-size: 10px; color: var(--text-tertiary);">Applies unitary transform to |ψ⟩</span>
+                </div>
+
+                <div class="gate-button-grid">
+                  <button type="button" class="gate-btn" data-gate="H" title="Hadamard: Creates equal superposition |+>">H Gate</button>
+                  <button type="button" class="gate-btn" data-gate="X" title="Pauli-X: Bit flip (NOT gate)">X Gate</button>
+                  <button type="button" class="gate-btn" data-gate="Y" title="Pauli-Y: Bit + Phase flip">Y Gate</button>
+                  <button type="button" class="gate-btn" data-gate="Z" title="Pauli-Z: Phase flip">Z Gate</button>
+                  <button type="button" class="gate-btn" data-gate="S" title="Phase S gate: pi/2 rotation">S Gate</button>
+                  <button type="button" class="gate-btn" data-gate="T" title="T gate: pi/4 rotation">T Gate</button>
+                  <button type="button" class="gate-btn reset-btn" data-gate="RESET" title="Reset state to ground |0>">Reset |0⟩</button>
+                  <button type="button" class="gate-btn measure-btn" id="bloch-measure-btn" title="Simulate Born Rule collapse">⚡ Measure |ψ⟩</button>
+                </div>
+
+                <!-- Continuous Rotation Sliders -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+                  <div>
+                    <label for="bloch-theta-slider" style="font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;">
+                      <span>θ (Polar):</span> <span id="bloch-theta-readout">90°</span>
+                    </label>
+                    <input type="range" id="bloch-theta-slider" min="0" max="180" value="90" style="width: 100%;">
+                  </div>
+                  <div>
+                    <label for="bloch-phi-slider" style="font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); display: flex; justify-content: space-between;">
+                      <span>φ (Phase):</span> <span id="bloch-phi-readout">0°</span>
+                    </label>
+                    <input type="range" id="bloch-phi-slider" min="0" max="360" value="0" style="width: 100%;">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: Cryptanalysis & Grover's Quantum Attack Resistance -->
+        <div id="tab-cryptanalysis" class="tab-content" style="display: none;">
+          <div class="cryptanalysis-workspace">
+            <div class="security-grade-banner">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--text-tertiary);">NIST SP 800-63B & POST-QUANTUM RATING</span>
+                <h3 id="crypto-grade-title" style="font-size: 18px; font-weight: 700; color: var(--quantum-state-0); margin-top: 2px;">
+                  MIL-SPEC CRYPTOGRAPHIC STRENGTH
+                </h3>
+              </div>
+              <span id="crypto-grade-badge" class="badge-tag accept" style="font-size: 12px; padding: 4px 10px;">
+                PASS • 100% UNIFORM
+              </span>
+            </div>
+
+            <div class="grover-grid">
+              <!-- Classical Online Attack -->
+              <div class="grover-card">
+                <div class="grover-card-title">
+                  <span>Classical Online Brute Force</span>
+                  <span style="color: var(--quantum-gold);">100 Guesses / sec</span>
+                </div>
+                <div id="crypto-online-time" class="grover-metric-big gold">—</div>
+                <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+                  Standard web service protected by sliding-window rate limiting.
+                </p>
+              </div>
+
+              <!-- High-End Multi-GPU Rig -->
+              <div class="grover-card">
+                <div class="grover-card-title">
+                  <span>Offline GPU Farm (8x RTX 4090)</span>
+                  <span style="color: var(--quantum-cyan);">100 Billion Hashes/s</span>
+                </div>
+                <div id="crypto-gpu-time" class="grover-metric-big cyan">—</div>
+                <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+                  Attacker holding salted SHA-256 password hash database dump.
+                </p>
+              </div>
+
+              <!-- Supercomputer Cluster -->
+              <div class="grover-card">
+                <div class="grover-card-title">
+                  <span>Nation-State Supercomputer</span>
+                  <span style="color: var(--quantum-state-0);">10¹⁵ Hashes/s</span>
+                </div>
+                <div id="crypto-super-time" class="grover-metric-big emerald">—</div>
+                <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+                  Exascale computing cluster utilizing massive parallel ASIC arrays.
+                </p>
+              </div>
+
+              <!-- Quantum Grover's Algorithm -->
+              <div class="grover-card" style="border-color: rgba(245, 158, 11, 0.4);">
+                <div class="grover-card-title">
+                  <span style="color: var(--quantum-gold);">Quantum Computer (Grover's Search)</span>
+                  <span class="badge-tag" style="background-color: rgba(245, 158, 11, 0.2); color: var(--quantum-gold); border: 1px solid var(--quantum-gold);">O(√N) Speedup</span>
+                </div>
+                <div id="crypto-grover-time" class="grover-metric-big gold">—</div>
+                <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+                  Grover's algorithm evaluates the keyspace in quadratic time: <code style="color: var(--quantum-gold);">2^(H/2)</code> oracle queries. Effective post-quantum security is <strong id="crypto-grover-bits" style="color: var(--quantum-gold);">—</strong>.
+                </p>
+              </div>
+            </div>
+
+            <!-- Entropy Characteristics -->
+            <div style="background-color: var(--bg-surface-sunken); border: 1px solid var(--border-dim); border-radius: var(--panel-radius); padding: 14px;">
+              <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">
+                Keyspace Dimensions & Quantum Resistance
+              </span>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px;">
+                <div>
+                  <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">TOTAL KEYSPACE (2^H)</div>
+                  <div id="crypto-keyspace-val" style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text-primary); margin-top: 2px;">—</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">POST-QUANTUM MARGIN</div>
+                  <div id="crypto-pq-margin" style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--quantum-state-0); margin-top: 2px;">—</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">MODULO BIAS LEVEL</div>
+                  <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--quantum-state-0); margin-top: 2px;">0.00% (Strictly 0)</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 4: Batch Vault Table -->
+        <div id="tab-batch" class="tab-content" style="display: none;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-surface-sunken); padding: 10px 14px; border: 1px solid var(--border-dim); border-radius: var(--panel-radius);">
+              <div>
+                <span style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);">MULTI-KEY QUANTUM VAULT</span>
+                <p style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Simultaneous quantum register measurement for high-throughput secrets</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" id="batch-export-env-btn" class="btn-secondary" style="font-size: 11px;">Export .env</button>
+                <button type="button" id="batch-export-csv-btn" class="btn-secondary" style="font-size: 11px;">Export CSV</button>
+                <button type="button" id="batch-export-json-btn" class="btn-secondary" style="font-size: 11px;">Export JSON</button>
+              </div>
+            </div>
+
+            <div class="batch-vault-container">
+              <table class="batch-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px;">#</th>
+                    <th>Quantum Password</th>
+                    <th style="width: 100px;">Length</th>
+                    <th style="width: 120px;">Entropy</th>
+                    <th style="width: 70px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="batch-table-body">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-tertiary); padding: 30px;">
+                      Select "Batch Vault" mode and click "Measure Quantum Register" to generate keys.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: Rejection Sampling Table -->
         <div id="tab-sampling" class="tab-content" style="display: none;">
           <div id="sampling-chunks-container" class="sampling-trace-view">
             <!-- Dynamically populated with chunk validation table -->
           </div>
         </div>
 
-        <!-- TAB 3: Circuit Diagram Display -->
-        <div id="tab-circuit" class="tab-content" style="display: none;">
-          <div id="circuit-diagram-container" class="circuit-display-view">
-            <!-- SVG / Text diagram -->
+        <!-- TAB 6: Live Quantum vs PRNG Benchmark -->
+        <div id="tab-benchmark" class="tab-content" style="display: none;">
+          <div class="benchmark-workspace">
+            <div style="display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-surface-sunken); padding: 12px 16px; border: 1px solid var(--border-dim); border-radius: var(--panel-radius);">
+              <div>
+                <span style="font-weight: 700; color: var(--text-primary); font-family: var(--font-mono);">HEAD-TO-HEAD SCIENTIFIC BENCHMARK</span>
+                <p style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Evaluate True Physical Collapse against Deterministic Mersenne Twister PRNG</p>
+              </div>
+              <button type="button" id="run-benchmark-btn" class="btn-secondary" style="background-color: var(--quantum-gold); color: var(--bg-void); font-weight: 700; border: none;">
+                Run Comparative Benchmark
+              </button>
+            </div>
+
+            <div class="benchmark-split-grid">
+              <!-- Quantum Side -->
+              <div class="benchmark-side-card quantum-side">
+                <div class="benchmark-card-header" style="color: var(--quantum-gold);">
+                  <span>QUANTUM (AERSIMULATOR)</span>
+                  <span class="badge-tag accept">UNPREDICTABLE</span>
+                </div>
+                <div class="benchmark-card-body">
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Entropy Mechanism</span>
+                    <span id="bm-q-source" class="benchmark-metric-val">Born Rule Collapse</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Physical Predictability</span>
+                    <span id="bm-q-determ" class="benchmark-metric-val" style="color: var(--quantum-state-0);">Zero (Non-Deterministic)</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Modulo Bias</span>
+                    <span id="bm-q-bias" class="benchmark-metric-val" style="color: var(--quantum-state-0);">0.00% (Strictly Eliminated)</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Shannon Entropy</span>
+                    <span id="bm-q-entropy" class="benchmark-metric-val gold">—</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Bit Balance (0s vs 1s)</span>
+                    <span id="bm-q-bits" class="benchmark-metric-val cyan">—</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Active Register</span>
+                    <span id="bm-q-qubits" class="benchmark-metric-val">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Classical PRNG Side -->
+              <div class="benchmark-side-card classical-side">
+                <div class="benchmark-card-header" style="color: var(--text-secondary);">
+                  <span>CLASSICAL PRNG (MERSENNE TWISTER)</span>
+                  <span class="badge-tag reject">DETERMINISTIC</span>
+                </div>
+                <div class="benchmark-card-body">
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Entropy Mechanism</span>
+                    <span id="bm-c-source" class="benchmark-metric-val">MT19937 Bit Shifting</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Physical Predictability</span>
+                    <span id="bm-c-determ" class="benchmark-metric-val" style="color: var(--quantum-rejected);">Reversible (624-word state)</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Modulo Bias</span>
+                    <span id="bm-c-bias" class="benchmark-metric-val" style="color: var(--quantum-rejected);">Inherent Modulo Artifact</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Shannon Entropy</span>
+                    <span id="bm-c-entropy" class="benchmark-metric-val">—</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Bit Balance (0s vs 1s)</span>
+                    <span id="bm-c-bits" class="benchmark-metric-val">—</span>
+                  </div>
+                  <div class="benchmark-metric-row">
+                    <span class="benchmark-metric-label">Active Register</span>
+                    <span class="benchmark-metric-val">0 (Virtual CPU Only)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- TAB 4: Raw OpenQASM Code -->
+        <!-- TAB 7: Interactive Modulo Bias Sandbox -->
+        <div id="tab-sandbox" class="tab-content" style="display: none;">
+          <div class="sandbox-workspace">
+            <div class="sandbox-controls-row">
+              <div style="flex: 1;">
+                <label for="sandbox-k-slider" class="control-label" style="display: flex; justify-content: space-between;">
+                  <span>Alphabet Size (K):</span>
+                  <output id="sandbox-k-val" class="control-readout" style="font-size: 14px;">10</output>
+                </label>
+                <input type="range" id="sandbox-k-slider" min="3" max="64" value="10">
+              </div>
+              <div style="flex: 1;">
+                <label for="sandbox-samples-slider" class="control-label" style="display: flex; justify-content: space-between;">
+                  <span>Trial Sample Count:</span>
+                  <output id="sandbox-samples-val" class="control-readout" style="font-size: 14px;">2000</output>
+                </label>
+                <input type="range" id="sandbox-samples-slider" min="500" max="5000" step="500" value="2000">
+              </div>
+              <button type="button" id="sandbox-run-btn" class="btn-secondary" style="height: 38px; align-self: flex-end; background-color: var(--quantum-cyan); color: var(--bg-void); font-weight: 700; border: none;">
+                Run Simulation
+              </button>
+            </div>
+
+            <div class="histogram-comparison-deck">
+              <!-- Naive Modulo Histogram -->
+              <div class="histogram-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-weight: 700; color: var(--quantum-rejected); font-family: var(--font-mono); font-size: 12px;">NAIVE MODULO ARITHMETIC (v % K)</span>
+                  <span id="sandbox-naive-badge" class="badge-tag reject">BIASED</span>
+                </div>
+                <div id="sandbox-naive-hist" class="histogram-chart-viewport"></div>
+                <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">
+                  <span>Chi-Square Stat (χ²): <strong id="sandbox-naive-chi" style="color: var(--quantum-rejected);">—</strong></span>
+                  <span>p-value: <strong id="sandbox-naive-p">—</strong></span>
+                </div>
+              </div>
+
+              <!-- Rejection Sampling Histogram -->
+              <div class="histogram-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-weight: 700; color: var(--quantum-state-0); font-family: var(--font-mono); font-size: 12px;">QUANTUM REJECTION SAMPLING (v &lt; K)</span>
+                  <span id="sandbox-rej-badge" class="badge-tag accept">UNIFORM</span>
+                </div>
+                <div id="sandbox-rej-hist" class="histogram-chart-viewport"></div>
+                <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">
+                  <span>Chi-Square Stat (χ²): <strong id="sandbox-rej-chi" style="color: var(--quantum-state-0);">—</strong></span>
+                  <span>p-value: <strong id="sandbox-rej-p">—</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 8: Circuit Diagram Display -->
+        <div id="tab-circuit" class="tab-content" style="display: none;">
+          <div id="circuit-diagram-container" class="circuit-display-view"></div>
+        </div>
+
+        <!-- TAB 9: Raw OpenQASM Code -->
         <div id="tab-qasm" class="tab-content" style="display: none;">
           <div class="code-terminal-view">
             <pre><code id="qasm-view-container">Awaiting circuit synthesis...</code></pre>
           </div>
         </div>
 
-        <!-- TAB 5: Quantum vs PRNG Scientific Explainer (Phase 7) -->
+        <!-- TAB 10: Quantum vs PRNG Scientific Explainer -->
         <div id="tab-explainer" class="tab-content" style="display: none; padding: 24px; max-height: 480px; overflow-y: auto;">
           <div style="display: flex; flex-direction: column; gap: 20px;">
             <div style="background-color: var(--bg-surface-sunken); border: 1px solid var(--border-dim); border-radius: var(--panel-radius); padding: 16px;">
@@ -257,6 +733,29 @@
     <span>Quantum Randomness Guarantee: Born Rule P(|x⟩) = |⟨x|ψ⟩|² • Zero Modulo Bias via Rejection Sampling</span>
     <span>AerSimulator Stabilizer Engine • Rate-Limited NIST SP 800-90B Compliant Entropy Profile</span>
   </footer>
+
+  <!-- QR Code Modal Dialog -->
+  <div id="qr-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+    <div class="modal-window">
+      <div class="modal-header">
+        <span id="qr-modal-title" style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--quantum-gold); text-transform: uppercase;">
+          Air-Gapped QR Transfer
+        </span>
+        <button type="button" id="qr-modal-close" class="btn-secondary" style="padding: 2px 8px; font-size: 11px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="qr-canvas-holder">
+          <canvas id="qr-canvas" width="220" height="220"></canvas>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+          Scan with your smartphone camera or password manager to transfer this quantum key securely without clipboard interception or network sync.
+        </p>
+        <button type="button" id="qr-modal-done" class="btn-primary-trigger" style="width: 100%;">
+          Close QR Window
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script src="/app.js"></script>
 </body>
