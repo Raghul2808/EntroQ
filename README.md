@@ -1,200 +1,223 @@
-# Quantum Random Password Generator (QRNG)
+# QuantGen — Quantum Cryptographic Password & Passphrase Generator
 
-> **Cryptographic Entropy from Quantum State Superposition & Born Rule Collapse**  
-> Built with **Python 3.12**, **FastAPI**, **Qiskit Aer**, and a custom **dark laboratory instrument** frontend.
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Qiskit](https://img.shields.io/badge/Qiskit-1.3+-6929C4?logo=qiskit&logoColor=white)](https://qiskit.org/)
+[![Tests](https://img.shields.io/badge/Tests-26%20Passed-10b981)](https://github.com/SomnathShaw001/QuantGen)
+[![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b.svg)](LICENSE)
 
----
-
-## 1. Scientific & Quantum Foundations
-
-### The Problem with Pseudo-Randomness (PRNGs)
-Classical random generators (like Python's `random.random()`, based on the Mersenne Twister MT19937) are **deterministic state machines**. Given an internal 624-word state vector or initial seed, the entire output sequence is completely predictable and mathematically reversible. They do not produce true randomness, only pseudo-random numbers.
-
-### True Quantum Entropy via the Born Rule
-In quantum mechanics, measurement outcomes are fundamentally non-deterministic. For each password generation:
-1. An $N$-qubit register is prepared in the ground state $|0\rangle^{\otimes N}$.
-2. A **Hadamard gate ($H$)** is applied to every qubit:
-   $$H |0\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$$
-   This transforms the system into a maximal, equal superposition of all $2^N$ computational basis states:
-   $$|\psi\rangle = \frac{1}{\sqrt{2^N}} \sum_{x \in \{0,1\}^N} |x\rangle$$
-3. Each qubit is measured in the computational $Z$-basis. According to the **Born Rule**, the probability of measuring any specific bitstring $x$ is:
-   $$P(x) = |\langle x | \psi \rangle|^2 = \left|\frac{1}{\sqrt{2^N}}\right|^2 = \frac{1}{2^N}$$
-   This produces genuine, physical entropy derived directly from quantum state collapse.
-
-### Zero Modulo Bias via Rejection Sampling
-When mapping a random integer $v \in [0, 2^b - 1]$ to an alphabet of size $K$ (where $b = \lceil \log_2 K \rceil$), naive systems compute $v \pmod K$.  
-Because $2^b$ is rarely an exact multiple of $K$, indices from $0$ to $(2^b \pmod K) - 1$ have higher probability than higher indices—this is **modulo bias**.
-
-**Our Solution — Rejection Sampling:**
-- If $v < K$: The character at index $v$ is **accepted**.
-- If $v \ge K$: The chunk is **rejected and discarded**. Additional quantum bits are measured.
-- **Mathematical Uniformity Proof:**
-  $$P(v = i \mid v < K) = \frac{P(v = i)}{P(v < K)} = \frac{1/2^b}{K / 2^b} = \frac{1}{K} \quad \forall i \in \{0, \dots, K-1\}$$
-  Every character in the alphabet has the exact same probability $1/K$. Modulo bias is completely eliminated ($0.00\%$ bias).
-
-### Theoretical vs. Empirical Shannon Entropy
-For an alphabet of size $K$ and password length $L$:
-- **Maximum Theoretical Entropy:**
-  $$H_{\text{max}} = L \times \log_2(K) \quad \text{bits}$$
-- **Empirical Shannon Entropy:**
-  $$H_{\text{empirical}} = - L \sum_{c \in \text{chars}} p(c) \log_2 p(c) \quad \text{bits}$$
-  Our system computes both in real-time, verifying near-100% entropy density.
-
-### Hardware Noise & Decoherence (Physical vs Ideal)
-In real superconducting transmon processors (such as IBM Quantum Eagle/Heron chips):
-- Qubits undergo thermal relaxation ($T_1$) and dephasing ($T_2$).
-- Readout measurement has physical fidelity limits ($\approx 1.5\%$ readout error).
-- Our backend provides a **Transmon Noise Model** simulating realistic single-qubit depolarizing noise ($0.1\%$) and asymmetric readout errors alongside the ideal stabilizer simulator.
+> **True physical entropy derived from quantum state superposition, Born rule wavefunction collapse, and mathematically verified zero-bias rejection sampling.**
 
 ---
 
-## 2. Architecture
+## ⚡ Overview
+
+Most classical password generators rely on deterministic Pseudo-Random Number Generators (PRNGs) like Python's `random` (Mersenne Twister MT19937) or standard OS entropy pools. While adequate for non-critical use, PRNGs operate on internal deterministic state machines and often suffer from subtle **modulo bias** when mapping raw bits into custom character sets.
+
+**QuantGen** is a full-stack quantum cryptographic tool built with **Qiskit** and **FastAPI**. It simulates genuine quantum circuits on superconducting transmon architecture, executing Hadamard transformations to achieve maximal superposition and measuring non-deterministic bitstrings governed strictly by the Born Rule.
+
+---
+
+## 🔬 Core Quantum & Cryptographic Principles
+
+### 1. Hadamard Superposition & Born Rule Collapse
+For an $N$-qubit quantum register initialized in ground state $|0\rangle^{\otimes N}$, an individual Hadamard gate ($H$) is applied to every qubit:
+
+$$H |0\rangle = \frac{1}{\sqrt{2}} (|0\rangle + |1\rangle)$$
+
+The composite system enters an equal superposition across all $2^N$ basis states:
+
+$$|\psi\rangle = \frac{1}{\sqrt{2^N}} \sum_{x \in \{0, 1\}^N} |x\rangle$$
+
+Upon projective measurement in the computational $Z$-basis, the wavefunction collapses non-deterministically according to the **Born Rule**:
+
+$$P(x) = |\langle x | \psi \rangle|^2 = \frac{1}{2^N}$$
+
+### 2. Elimination of Modulo Bias via Rejection Sampling
+When mapping a measured integer $v \in [0, 2^b - 1]$ to an alphabet of size $K$ (where $b = \lceil \log_2 K \rceil$), naive systems compute $v \pmod K$. Because $2^b$ is rarely an exact multiple of $K$, lower indices receive disproportionately higher probability.
+
+**QuantGen enforces strict Rejection Sampling:**
+* Any chunk measurement where $v \ge K$ is discarded.
+* New quantum shots are collected until a valid integer $0 \le v < K$ is obtained.
+* **Uniformity Guarantee:**
+  $$P(v = i \mid v < K) = \frac{P(v = i)}{P(v < K)} = \frac{1 / 2^b}{K / 2^b} = \frac{1}{K} \quad \forall i \in \{0, \dots, K-1\}$$
+  Every character is guaranteed exact uniform probability ($0.00\%$ modulo bias).
+
+---
+
+## ✨ Features
+
+- **Dual Entropy Modes**:
+  - **Quantum Character Keys**: High-entropy passwords with custom alphabet toggles (uppercase, lowercase, digits, symbols) or user-defined character sets.
+  - **Quantum Diceware Passphrases**: Memorable multi-word passphrases using 10-qubit measurement vectors ($2^{10} = 1024$ words per block).
+- **Physical Transmon Qubit Register**:
+  - **Chunk Bays View**: Visualizes grouped qubits per character chunk with silicon carrier bays, raw integers, and acceptance/rejection tags.
+  - **Die Matrix View**: High-density silicon transmon cell layout.
+  - **Interactive 3D Bloch Sphere**: Click any qubit in the register to inspect its exact coordinates, polar angle ($\theta$), and azimuthal angle ($\phi$).
+- **Realistic Transmon Noise Simulation**:
+  - Run with ideal statevector simulation (`AerSimulator`) or realistic noisy quantum hardware modeling thermal depolarization ($T_1/T_2$) and readout errors.
+- **Circuit Telemetry & OpenQASM 2.0 Export**:
+  - Inspect circuit depth, gate counts, SVG diagrams, and export canonical OpenQASM assembly for verification on real quantum computers.
+- **Empirical Shannon Entropy Analytics**:
+  - Real-time calculation of theoretical maximum vs. empirical Shannon entropy bits.
+- **Interactive Educational Suites**:
+  - **Live Benchmark**: Head-to-head comparison between Quantum RNG and Classical PRNG across execution speed, bit balance, and Shannon entropy.
+  - **Modulo Bias Sandbox**: Live Monte Carlo distribution simulation demonstrating why naive modulo arithmetic fails vs. rejection sampling.
+- **Cryptographic Hygiene**:
+  - Zero server-side logging of generated secrets.
+  - Sliding-window IP rate limiting (30 requests/min).
+  - One-click zero-clipboard copy and encrypted-ready QR code generation.
+
+---
+
+## 📁 Repository Structure
 
 ```
-qqc/
+QuantGen/
 ├── backend/
 │   ├── api/
-│   │   └── routes.py         # POST /generate with rate limiting & hygiene
+│   │   └── routes.py             # REST endpoints (generate, diceware, benchmarks, circuit)
 │   ├── core/
-│   │   ├── charsets.py       # Alphabet validation & bit calculation
-│   │   ├── circuit.py        # Qiskit circuit builder, noise models & exports
-│   │   ├── entropy.py        # Rejection sampling & Shannon calculations
-│   │   ├── generator.py      # Orchestrator combining circuit + entropy
-│   │   └── rate_limiter.py   # Sliding-window rate limiter
+│   │   ├── charsets.py           # Alphabet definitions & bit-depth validation
+│   │   ├── circuit.py            # Qiskit circuit builder, noise models & QASM export
+│   │   ├── diceware.py           # 1024-word Diceware passphrase generator
+│   │   ├── entropy.py            # Rejection sampling & Shannon calculations
+│   │   ├── generator.py          # Quantum generation pipeline orchestrator
+│   │   └── rate_limiter.py       # Sliding-window IP rate limiter
 │   ├── schemas/
-│   │   └── generator.py      # Pydantic request/response schemas
-│   └── main.py               # FastAPI entrypoint + static files mount
+│   │   └── generator.py          # Pydantic validation schemas
+│   └── main.py                   # FastAPI application & static file router
 ├── frontend/
-│   ├── index.html            # Semantic HTML instrument chassis
-│   ├── style.css             # Custom cryogenic laboratory design system
-│   └── app.js                # Superposition collapse animation & telemetry
+│   ├── index.html                # Laboratory chassis interface
+│   ├── style.css                 # Cryogenic hardware design system
+│   └── app.js                    # Superposition collapse animation & 3D Bloch sphere
 ├── tests/
-│   ├── test_api.py           # Endpoint integration & rate limit tests
-│   ├── test_circuit.py       # Quantum circuit structure & Born rule tests
-│   ├── test_entropy.py       # Rejection sampling & Shannon entropy tests
-│   └── test_uniformity.py    # Pearson Chi-squared Goodness-of-Fit tests
-├── Dockerfile                # Multi-stage production container
-├── docker-compose.yml        # One-command orchestration
-├── render.yaml               # PaaS deployment spec
-└── requirements.txt          # Frozen dependencies
+│   ├── test_api.py               # Endpoint validation & rate limit tests
+│   ├── test_circuit.py           # Quantum circuit structure & superposition tests
+│   ├── test_diceware.py          # Diceware wordlist & passphrase tests
+│   ├── test_entropy.py           # Rejection sampling & entropy math tests
+│   └── test_uniformity.py        # Pearson Chi-squared Goodness-of-Fit tests
+├── Dockerfile                    # Production multi-stage container
+├── docker-compose.yml            # Docker orchestration
+├── render.yaml                   # Render deployment specification
+├── railway.toml                  # Railway deployment configuration
+├── requirements.txt              # Production Python dependencies
+└── README.md
 ```
 
 ---
 
-## 3. Cryptographic & Security Hygiene
-
-1. **Zero Server-Side Logging of Secrets:**
-   The server logger records only sanitized metadata (`length`, `qubits`, `shots`, `rejections`, `latency`). Passwords, raw measurement bitstrings, and secret keys are **never** logged to stdout, stderr, or persistent storage.
-2. **Rate Limiting:**
-   Built-in sliding-window rate limiter (30 requests/minute per IP) prevents denial-of-service and protects quantum simulation resources.
-3. **OpenQASM 2.0 Export:**
-   Every generated key can be inspected as canonical OpenQASM assembly, allowing scientific verification on external quantum hardware.
-
----
-
-## 4. Quickstart & Local Execution
+## 🚀 Quickstart & Local Setup
 
 ### Prerequisites
-- Python 3.12+
-- `pip`
+* **Python 3.12+**
+* `pip` and `git`
 
-### Installation & Run
+### 1. Clone the Repository
 ```bash
-# 1. Clone repository & enter workspace
-git clone <repo-url> qqc
-cd qqc
-
-# 2. Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Start the server
-uvicorn backend.main:app --port 8000 --host 127.0.0.1
+git clone https://github.com/SomnathShaw001/QuantGen.git
+cd QuantGen
 ```
 
-Open your browser to: **`http://127.0.0.1:8000`**
+### 2. Create and Activate Virtual Environment
+```bash
+# macOS / Linux:
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Windows:
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Launch the Server
+```bash
+uvicorn backend.main:app --port 8000 --host 127.0.0.1 --reload
+```
+
+Open your browser at: **`http://127.0.0.1:8000`**
 
 ---
 
-## 5. Running the Automated Test Suite
+## 🧪 Testing & Verification
 
-Run all 21 unit, integration, and statistical uniformity tests:
+Run the full automated test suite (26 unit, integration, and statistical uniformity tests):
+
 ```bash
 pytest -v
 ```
 
-### Statistical Uniformity Testing (`test_uniformity.py`)
-Applies **Pearson's Chi-squared Goodness-of-Fit Test** ($\alpha = 0.01$) over thousands of generated characters to mathematically prove zero modulo bias.
+### Statistical Uniformity Testing (`tests/test_uniformity.py`)
+Applies **Pearson's Chi-squared Goodness-of-Fit Test** ($\alpha = 0.01$) over sampled distributions to verify mathematically that character occurrences match a uniform distribution with zero modulo bias.
 
 ---
 
-## 6. Docker Deployment
+## 🌐 Free Hosting & Deployment Guide
 
+Because QuantGen utilizes **Qiskit Aer** (which relies on compiled scientific C++ binaries and NumPy/SciPy), containerized or Python-native platforms are recommended over serverless platforms that have strict bundle size limits (e.g. Vercel's 250MB uncompressed limit).
+
+### Option 1: Render (Recommended — 100% Free Web Service)
+1. Fork or push this repository to your GitHub account.
+2. Sign in to [Render](https://render.com/).
+3. Click **New +** → **Blueprint** and connect your `QuantGen` repository (it will automatically read [render.yaml](render.yaml)).
+4. Or create a **Web Service**:
+   * **Environment**: `Python 3`
+   * **Build Command**: `pip install -r requirements.txt`
+   * **Start Command**: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+5. Your service will be live at `https://quantgen-<unique-id>.onrender.com`.
+
+### Option 2: Hugging Face Spaces (100% Free Docker Tier)
+Hugging Face Spaces provides a free 16GB RAM CPU container ideal for scientific quantum libraries:
+1. Create a new Space on [Hugging Face](https://huggingface.co/spaces).
+2. Choose **Docker** as the Space SDK.
+3. Link your GitHub repository or push this code to the Space's Git remote.
+4. The included [Dockerfile](Dockerfile) will build and expose port `7860` or `8000`.
+
+### Option 3: Railway
+1. Sign up on [Railway](https://railway.app/).
+2. Click **New Project** → **Deploy from GitHub repo**.
+3. Select `QuantGen`. Railway uses [railway.toml](railway.toml) to configure Nixpacks and launch the app automatically.
+
+### Option 4: Vercel (Decoupled Frontend)
+If you prefer hosting the static frontend on Vercel:
+1. Deploy the `frontend/` folder to Vercel as a static site.
+2. Deploy the `backend/` to Render, Railway, or Hugging Face.
+3. Update the API base URL in `frontend/app.js` to point to your live backend service.
+
+---
+
+## 📡 API Reference
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | API health check and simulator status |
+| `POST` | `/generate` | Generate quantum password with rejection sampling |
+| `POST` | `/diceware` | Generate quantum Diceware passphrase |
+| `POST` | `/batch` | Generate up to 10 keys simultaneously |
+| `GET` | `/circuit/inspect` | Returns QASM 2.0 and SVG representation of an $N$-qubit circuit |
+| `GET` | `/benchmark/compare` | Head-to-head comparison: Quantum RNG vs. Python PRNG |
+| `GET` | `/benchmark/modulo-simulation` | Monte Carlo rejection sampling vs. modulo simulation data |
+
+### Example `POST /generate`
 ```bash
-# Build and run containerized service
-docker-compose up --build -d
-```
-Service runs on port `8000` with automated health checks enabled.
-
----
-
-## 7. API Reference
-
-### `POST /generate`
-
-**Request Body:**
-```json
-{
-  "length": 16,
-  "include_uppercase": true,
-  "include_lowercase": true,
-  "include_digits": true,
-  "include_symbols": true,
-  "custom_charset": null,
-  "backend_mode": "simulator"
-}
-```
-*`backend_mode` options:* `"simulator"` (ideal), `"noisy_qpu"` (transmon noise), `"ibm_quantum"` (hardware queue).
-
-**Response (Sample):**
-```json
-{
-  "password": "r#4W!9bK8m$L2p*Q",
-  "length": 16,
-  "charset_size": 88,
-  "bits_per_char": 7,
-  "num_qubits": 112,
-  "backend_mode": "simulator",
-  "backend_name": "AerSimulator (Ideal Superposition)",
-  "queue_time_ms": 0.0,
-  "primary_bitstring": "0100110...",
-  "raw_bitstrings": ["0100110..."],
-  "total_shots": 1,
-  "accepted_count": 16,
-  "rejected_count": 2,
-  "theoretical_entropy_bits": 103.35,
-  "shannon_entropy_bits": 64.0,
-  "execution_time_ms": 12.8,
-  "circuit": {
-    "num_qubits": 112,
-    "depth": 2,
-    "qasm": "OPENQASM 2.0;\n...",
-    "svg_diagram": "<svg>...</svg>"
-  },
-  "qubit_states": [ ... ],
-  "probability_distribution": {
-    "theoretical_p0": 0.5,
-    "theoretical_p1": 0.5,
-    "empirical_p0": 0.5089,
-    "empirical_p1": 0.4911
-  }
-}
+curl -X POST "http://127.0.0.1:8000/generate" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "length": 16,
+       "include_uppercase": true,
+       "include_lowercase": true,
+       "include_digits": true,
+       "include_symbols": true,
+       "backend_mode": "simulator"
+     }'
 ```
 
 ---
 
-## 8. License & Attribution
-MIT License • Engineered for cryptographic transparency and quantum education.
+## 📄 License
+This project is licensed under the [MIT License](LICENSE). Built for quantum education, cryptographic transparency, and high-entropy security.
