@@ -211,7 +211,7 @@
             </div>
             <div class="telemetry-node">
               <div class="telemetry-label">Theoretical Max</div>
-              <div id="metric-theoretical-entropy" class="telemetry-value cyan">—</div>
+              <div id="metric-theoretical-entropy" class="telemetry-value gold">—</div>
             </div>
             <div class="telemetry-node">
               <div class="telemetry-label">Active Qubits</div>
@@ -277,7 +277,7 @@
         <div style="padding: 10px 24px; background-color: var(--bg-surface-sunken); border-top: 1px solid var(--border-dim); display: flex; align-items: center; gap: 16px;">
           <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); text-transform: uppercase;">Shannon Density:</span>
           <div style="flex: 1; height: 6px; background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 3px; overflow: hidden;">
-            <div id="entropy-gauge-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--quantum-gold), var(--quantum-cyan)); transition: width 0.4s ease;"></div>
+            <div id="entropy-gauge-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--quantum-state-0), var(--quantum-gold)); transition: width 0.4s ease;"></div>
           </div>
           <span id="entropy-efficiency-readout" style="font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--quantum-gold);">0%</span>
         </div>
@@ -305,8 +305,35 @@
 
         <!-- TAB 1: Qubit Register Collapse -->
         <div id="tab-qubits" class="tab-content">
-          <div id="qubit-register-container" class="qubit-register-grid">
-            <!-- Dynamically populated with qubit chips -->
+          <div class="qubit-register-wrapper">
+            <!-- Hardware Register Overview HUD -->
+            <div class="register-hardware-hud">
+              <div class="register-counts-strip">
+                <div class="register-stat-node">
+                  <span style="color: var(--text-tertiary);">REGISTER:</span>
+                  <span id="qubit-total-stat" style="color: var(--text-primary); font-weight: 700;">0 Active Transmons</span>
+                </div>
+                <div class="register-stat-node">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--quantum-state-0);"></span>
+                  <span>|0⟩ Ground: <strong id="qubit-count-0" style="color: var(--quantum-state-0);">0 (0%)</strong></span>
+                </div>
+                <div class="register-stat-node">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--quantum-state-1);"></span>
+                  <span>|1⟩ Excited: <strong id="qubit-count-1" style="color: var(--quantum-state-1);">0 (0%)</strong></span>
+                </div>
+              </div>
+
+              <!-- View Mode Toggles -->
+              <div class="qubit-view-toggle-group">
+                <button type="button" class="qubit-toggle-btn active" id="qubit-view-chunks-btn" title="View grouped by character chunks">Chunk Blocks</button>
+                <button type="button" class="qubit-toggle-btn" id="qubit-view-grid-btn" title="View dense silicon die matrix">Die Matrix</button>
+              </div>
+            </div>
+
+            <!-- Qubit Register Container (Dynamically Populated) -->
+            <div id="qubit-register-container">
+              <!-- Dynamically populated with chunk blocks or die matrix -->
+            </div>
           </div>
         </div>
 
@@ -433,9 +460,9 @@
               <div class="grover-card">
                 <div class="grover-card-title">
                   <span>Offline GPU Farm (8x RTX 4090)</span>
-                  <span style="color: var(--quantum-cyan);">100 Billion Hashes/s</span>
+                  <span style="color: var(--text-secondary);">100 Billion Hashes/s</span>
                 </div>
-                <div id="crypto-gpu-time" class="grover-metric-big cyan">—</div>
+                <div id="crypto-gpu-time" class="grover-metric-big gold">—</div>
                 <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
                   Attacker holding salted SHA-256 password hash database dump.
                 </p>
@@ -574,7 +601,7 @@
                   </div>
                   <div class="benchmark-metric-row">
                     <span class="benchmark-metric-label">Bit Balance (0s vs 1s)</span>
-                    <span id="bm-q-bits" class="benchmark-metric-val cyan">—</span>
+                    <span id="bm-q-bits" class="benchmark-metric-val emerald">—</span>
                   </div>
                   <div class="benchmark-metric-row">
                     <span class="benchmark-metric-label">Active Register</span>
@@ -638,7 +665,7 @@
                 </label>
                 <input type="range" id="sandbox-samples-slider" min="500" max="5000" step="500" value="2000">
               </div>
-              <button type="button" id="sandbox-run-btn" class="btn-secondary" style="height: 38px; align-self: flex-end; background-color: var(--quantum-cyan); color: var(--bg-void); font-weight: 700; border: none;">
+              <button type="button" id="sandbox-run-btn" class="btn-secondary" style="height: 38px; align-self: flex-end; background-color: var(--quantum-gold); color: #000; font-weight: 700; border: none;">
                 Run Simulation
               </button>
             </div>
@@ -701,7 +728,7 @@
             </div>
 
             <div style="background-color: var(--bg-surface-sunken); border: 1px solid var(--border-dim); border-radius: var(--panel-radius); padding: 16px;">
-              <h3 style="font-size: 14px; font-weight: 700; color: var(--quantum-cyan); margin-bottom: 8px; font-family: var(--font-mono); text-transform: uppercase;">
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--quantum-gold); margin-bottom: 8px; font-family: var(--font-mono); text-transform: uppercase;">
                 2. Elimination of Modulo Bias via Rejection Sampling
               </h3>
               <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">

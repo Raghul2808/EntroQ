@@ -543,7 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (angle === 0) ctx.moveTo(p.px, p.py);
       else ctx.lineTo(p.px, p.py);
     }
-    ctx.strokeStyle = "rgba(6, 182, 212, 0.35)";
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 4]);
     ctx.stroke();
@@ -578,7 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.beginPath();
     ctx.moveTo(origin.px, origin.py);
     ctx.lineTo(axisX.px, axisX.py);
-    ctx.strokeStyle = "rgba(6, 182, 212, 0.7)";
+    ctx.strokeStyle = "rgba(245, 158, 11, 0.7)";
     ctx.stroke();
 
     // Y-Axis
@@ -594,7 +594,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fillText("|0⟩", axisZ.px + 5, axisZ.py - 4);
     ctx.fillStyle = "#f43f5e";
     ctx.fillText("|1⟩", axisNegZ.px + 5, axisNegZ.py + 12);
-    ctx.fillStyle = "#06b6d4";
+    ctx.fillStyle = "#f59e0b";
     ctx.fillText("|+⟩ (X)", axisX.px + 4, axisX.py + 4);
     ctx.fillStyle = "#64748b";
     ctx.fillText("Y", axisY.px + 4, axisY.py + 4);
@@ -978,8 +978,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cryptanalysis
     updateCryptanalysisTelemetry(data.theoretical_entropy_bits);
 
-    // Populate Qubit Chips
-    renderQubitChips(data.qubit_states);
+    // Populate Qubit Chips with Character Chunks & Die Matrix
+    renderQubitChips(data.qubit_states, data.chunks);
 
     // Populate Rejection Table
     renderSamplingTrace(data.chunks);
@@ -1007,6 +1007,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateCryptanalysisTelemetry(data.total_entropy_bits);
 
+    // Synthesize qubit states for the diceware word bits
+    const syntheticQubits = [];
+    if (data.word_details) {
+      let qCounter = 0;
+      data.word_details.forEach((w, wIdx) => {
+        const bits = w.bitstring.split("");
+        bits.forEach((bStr, bIdx) => {
+          syntheticQubits.push({
+            qubit_index: qCounter++,
+            collapsed_state: parseInt(bStr, 10),
+            theoretical_p0: 0.5,
+            theoretical_p1: 0.5,
+            chunk_index: wIdx,
+            bit_position: bIdx,
+            chunk_accepted: true,
+            mapped_character: w.word,
+          });
+        });
+      });
+    }
+
+    renderQubitChips(syntheticQubits, data.word_details ? data.word_details.map(w => ({
+      chunk_bits: w.bitstring,
+      value: w.word_index,
+      accepted: true,
+      character: w.word,
+    })) : null);
+
     // Render word trace in sampling tab
     renderDicewareWordTrace(data.word_details);
     renderCircuit(data.circuit);
@@ -1022,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td style="color: var(--text-tertiary);">${item.index}</td>
         <td style="font-weight: 700; color: var(--quantum-gold); letter-spacing: 0.05em;">${escapeHtml(item.password)}</td>
         <td>${item.length} chars</td>
-        <td style="color: var(--quantum-cyan);">${item.entropy_bits.toFixed(1)} bits</td>
+        <td style="color: var(--text-primary); font-weight: 600;">${item.entropy_bits.toFixed(1)} bits</td>
         <td>
           <button type="button" class="copy-mini-btn" data-pwd="${escapeHtml(item.password)}">Copy</button>
         </td>
@@ -1054,56 +1082,154 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Typewriter Decryption Reveal Animation
+  // Butter-Smooth Hardware Key Decryption Reveal (Zero Jitter / No Choppy Scramble)
   function staggeredPasswordReveal(targetText) {
-    let currentLen = 0;
-    const interval = setInterval(() => {
-      currentLen++;
-      playTypewriterTick();
-      const revealed = targetText.slice(0, currentLen);
-      const scrambled = Array.from({ length: targetText.length - currentLen }, () =>
-        String.fromCharCode(33 + Math.floor(Math.random() * 90))
-      ).join("");
-
-      passwordOutput.value = revealed + scrambled;
-
-      if (currentLen >= targetText.length) {
-        clearInterval(interval);
-        passwordOutput.value = targetText;
-      }
-    }, 28);
+    playTypewriterTick();
+    passwordOutput.value = targetText;
+    passwordOutput.classList.remove("key-reveal-pulse");
+    void passwordOutput.offsetWidth; // Force CSS animation reflow
+    passwordOutput.classList.add("key-reveal-pulse");
   }
 
   // -------------------------------------------------------------
-  // 10. VISUALIZERS: CHIPS, SAMPLING, CIRCUITS
+  // 10. SUPERCONDUCTING TRANSMON QUBIT REGISTER (HARDWARE CHIP VIEW)
   // -------------------------------------------------------------
-  function renderQubitChips(qubitStates) {
+  let qubitViewMode = "chunks"; // "chunks" | "grid"
+  const qubitTotalStat = document.getElementById("qubit-total-stat");
+  const qubitCount0 = document.getElementById("qubit-count-0");
+  const qubitCount1 = document.getElementById("qubit-count-1");
+  const qubitViewChunksBtn = document.getElementById("qubit-view-chunks-btn");
+  const qubitViewGridBtn = document.getElementById("qubit-view-grid-btn");
+
+  if (qubitViewChunksBtn && qubitViewGridBtn) {
+    qubitViewChunksBtn.addEventListener("click", () => {
+      qubitViewMode = "chunks";
+      qubitViewChunksBtn.classList.add("active");
+      qubitViewGridBtn.classList.remove("active");
+      if (latestGenerationData && latestGenerationData.qubit_states) {
+        renderQubitChips(latestGenerationData.qubit_states, latestGenerationData.chunks);
+      }
+    });
+
+    qubitViewGridBtn.addEventListener("click", () => {
+      qubitViewMode = "grid";
+      qubitViewGridBtn.classList.add("active");
+      qubitViewChunksBtn.classList.remove("active");
+      if (latestGenerationData && latestGenerationData.qubit_states) {
+        renderQubitChips(latestGenerationData.qubit_states, latestGenerationData.chunks);
+      }
+    });
+  }
+
+  function renderQubitChips(qubitStates, chunks) {
+    if (!qubitRegisterContainer) return;
     qubitRegisterContainer.innerHTML = "";
-    if (!qubitStates) return;
+    if (!qubitStates || qubitStates.length === 0) {
+      qubitRegisterContainer.innerHTML = '<div style="color: var(--text-tertiary); text-align: center; padding: 24px; font-family: var(--font-mono);">No active transmon qubits measured. Click "Measure Quantum Register" to collapse wavefunction.</div>';
+      return;
+    }
 
-    qubitStates.forEach((q, idx) => {
-      const chip = document.createElement("div");
-      chip.className = `qubit-chip collapsed-${q.collapsed_state}`;
-      chip.innerHTML = `
-        <div class="qubit-chip-label">q[${q.qubit_index}]</div>
-        <div class="qubit-chip-state">|${q.collapsed_state}⟩</div>
-        <div class="qubit-chip-prob">P(|0⟩): 50%</div>
-      `;
+    // Telemetry counts
+    const total = qubitStates.length;
+    const c0 = qubitStates.filter((q) => q.collapsed_state === 0).length;
+    const c1 = qubitStates.filter((q) => q.collapsed_state === 1).length;
+    const p0 = ((c0 / total) * 100).toFixed(1);
+    const p1 = ((c1 / total) * 100).toFixed(1);
 
-      chip.addEventListener("click", () => {
-        initAudio();
-        blochQubitSelect.value = q.qubit_index;
-        activeSelectedQubit = q.qubit_index;
-        currentTheta = q.collapsed_state === 0 ? 0.0 : Math.PI;
-        currentPhi = 0.0;
-        if (blochThetaSlider) blochThetaSlider.value = Math.round(currentTheta * (180 / Math.PI));
-        if (blochPhiSlider) blochPhiSlider.value = 0;
-        switchTab("bloch");
-        playRelayClick();
+    if (qubitTotalStat) qubitTotalStat.textContent = `${total} Active Transmons`;
+    if (qubitCount0) qubitCount0.textContent = `${c0} (${p0}%)`;
+    if (qubitCount1) qubitCount1.textContent = `${c1} (${p1}%)`;
+
+    if (qubitViewMode === "grid") {
+      // DENSE SILICON DIE MATRIX VIEW
+      const grid = document.createElement("div");
+      grid.className = "qpu-die-grid";
+
+      qubitStates.forEach((q) => {
+        const cell = document.createElement("div");
+        cell.className = `qpu-matrix-chip state-${q.collapsed_state}`;
+        cell.title = `Qubit Wire q[${q.qubit_index}] -> Collapsed to |${q.collapsed_state}⟩. Click to inspect on Bloch Sphere.`;
+        cell.innerHTML = `
+          <span class="matrix-idx">q[${q.qubit_index}]</span>
+          <span class="matrix-val">|${q.collapsed_state}⟩</span>
+        `;
+        cell.addEventListener("click", () => focusQubitOnBloch(q));
+        grid.appendChild(cell);
       });
 
-      qubitRegisterContainer.appendChild(chip);
-    });
+      qubitRegisterContainer.appendChild(grid);
+    } else {
+      // CHARACTER CHUNK BLOCKS VIEW
+      const stream = document.createElement("div");
+      stream.className = "qubit-chunks-stream";
+
+      // Group qubits by chunk_index
+      const chunkGroups = {};
+      qubitStates.forEach((q) => {
+        const cIdx = q.chunk_index ?? 0;
+        if (!chunkGroups[cIdx]) chunkGroups[cIdx] = [];
+        chunkGroups[cIdx].push(q);
+      });
+
+      Object.keys(chunkGroups).forEach((cIdxKey) => {
+        const cIdx = parseInt(cIdxKey, 10);
+        const qList = chunkGroups[cIdx];
+        const chunkInfo = chunks && chunks[cIdx] ? chunks[cIdx] : null;
+
+        const isAccepted = chunkInfo ? chunkInfo.accepted : (qList[0]?.chunk_accepted ?? true);
+        const charVal = chunkInfo && chunkInfo.character ? chunkInfo.character : (qList[0]?.mapped_character ?? "");
+        const intVal = chunkInfo ? chunkInfo.value : parseInt(qList.map((q) => q.collapsed_state).join(""), 2);
+
+        const bay = document.createElement("div");
+        bay.className = `chunk-silicon-bay ${isAccepted ? "" : "rejected-bay"}`;
+
+        const header = document.createElement("div");
+        header.className = "chunk-bay-header";
+        header.innerHTML = `
+          <div class="chunk-bay-title">
+            <span style="font-weight: 700; color: var(--text-primary);">CHUNK ${cIdx + 1}</span>
+            ${charVal ? `<span class="chunk-char-pill">${escapeHtml(charVal)}</span>` : ""}
+            <span style="color: var(--text-tertiary); font-size: 10px;">Integer: ${intVal}</span>
+          </div>
+          <span class="badge-tag ${isAccepted ? 'accept' : 'reject'}">
+            ${isAccepted ? 'ACCEPTED (0-BIAS)' : 'REJECTED (v ≥ K)'}
+          </span>
+        `;
+        bay.appendChild(header);
+
+        const bitsRow = document.createElement("div");
+        bitsRow.className = "chunk-bits-row";
+
+        qList.forEach((q) => {
+          const transmon = document.createElement("div");
+          transmon.className = `transmon-cell state-${q.collapsed_state}`;
+          transmon.title = `Wire q[${q.qubit_index}] | Born prob P(|0⟩)=50%. Click to focus 3D Bloch sphere.`;
+          transmon.innerHTML = `
+            <span class="transmon-idx">q[${q.qubit_index}]</span>
+            <span class="transmon-val">|${q.collapsed_state}⟩</span>
+          `;
+          transmon.addEventListener("click", () => focusQubitOnBloch(q));
+          bitsRow.appendChild(transmon);
+        });
+
+        bay.appendChild(bitsRow);
+        stream.appendChild(bay);
+      });
+
+      qubitRegisterContainer.appendChild(stream);
+    }
+  }
+
+  function focusQubitOnBloch(q) {
+    initAudio();
+    if (blochQubitSelect) blochQubitSelect.value = q.qubit_index;
+    activeSelectedQubit = q.qubit_index;
+    currentTheta = q.collapsed_state === 0 ? 0.0 : Math.PI;
+    currentPhi = 0.0;
+    if (blochThetaSlider) blochThetaSlider.value = Math.round(currentTheta * (180 / Math.PI));
+    if (blochPhiSlider) blochPhiSlider.value = 0;
+    switchTab("bloch");
+    playRelayClick();
   }
 
   function syncBlochQubitSelector(qubitStates) {
@@ -1117,6 +1243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     blochQubitSelect.value = activeSelectedQubit;
   }
+
 
   function renderSamplingTrace(chunks) {
     samplingChunksContainer.innerHTML = "";
@@ -1136,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <tbody>
         ${chunks.map((c) => `
           <tr>
-            <td style="font-family: var(--font-mono); color: var(--quantum-cyan);">${escapeHtml(c.chunk_bits)}</td>
+            <td style="font-family: var(--font-mono); color: var(--text-primary); font-weight: 600;">${escapeHtml(c.chunk_bits)}</td>
             <td>${c.value}</td>
             <td>
               <span class="badge-tag ${c.accepted ? 'accept' : 'reject'}">
@@ -1170,7 +1297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ${wordDetails.map((w) => `
           <tr>
             <td style="font-weight: 700; color: var(--quantum-gold);">${escapeHtml(w.word)}</td>
-            <td style="font-family: var(--font-mono); color: var(--quantum-cyan);">${escapeHtml(w.bitstring)}</td>
+            <td style="font-family: var(--font-mono); color: var(--text-primary); font-weight: 600;">${escapeHtml(w.bitstring)}</td>
             <td>#${w.word_index}</td>
             <td><span class="badge-tag accept">0.00% (Exact 2¹⁰)</span></td>
           </tr>
@@ -1233,7 +1360,7 @@ document.addEventListener("DOMContentLoaded", () => {
         new window.QRCode(qrCanvas, {
           width: 220,
           height: 220,
-          colorDark: "#38bdf8",
+          colorDark: "#f59e0b",
           colorLight: "#0c0f17",
         }).makeCode(key);
       }

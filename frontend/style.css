@@ -24,13 +24,13 @@
   --text-secondary: #94a3b8;     /* Parameter labels and secondary telemetry */
   --text-tertiary: #64748b;      /* Unit identifiers and disabled markings */
 
-  /* Quantum State Phosphors */
-  --quantum-gold: #f59e0b;       /* Coherent / Entropy Accent (Warm Amber) */
-  --quantum-cyan: #06b6d4;       /* Superposition Phase Wave (|ψ⟩) */
-  --quantum-state-0: #10b981;    /* Ground State |0⟩ (Emerald) */
-  --quantum-state-1: #f43f5e;    /* Excited State |1⟩ (Crimson/Ruby) */
-  --quantum-rejected: #ef4444;   /* Modulo Rejection Tag */
-  --quantum-accepted: #3b82f6;   /* Validated Character Chunk */
+  /* Pure Physical Phosphors & Laboratory Metals (ZERO BLUE, ZERO PURPLE) */
+  --quantum-gold: #f59e0b;       /* Coherent State / Entropy Accent (Warm Phosphor Amber) */
+  --quantum-silver: #cbd5e1;     /* Platinum Silver Metal */
+  --quantum-state-0: #10b981;    /* Ground State |0⟩ (Monochrome CRT Emerald) */
+  --quantum-state-1: #f43f5e;    /* Excited State |1⟩ (Cryogenic Sensor Carmine) */
+  --quantum-rejected: #ef4444;   /* Modulo Rejection Warning (Milled Red) */
+  --quantum-accepted: #10b981;   /* Validated Uniform Chunk (Phosphor Emerald) */
 
   /* Spacing Scale */
   --space-3xs: 2px;
@@ -290,8 +290,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .checkbox-row input[type="checkbox"]:checked {
-  background-color: var(--quantum-cyan);
-  border-color: var(--quantum-cyan);
+  background-color: var(--quantum-gold);
+  border-color: var(--quantum-gold);
 }
 
 .checkbox-row input[type="checkbox"]:checked::before {
@@ -329,7 +329,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .text-input-field:focus {
-  border-color: var(--quantum-cyan);
+  border-color: var(--quantum-gold);
 }
 
 /* Primary Execution Trigger Button */
@@ -369,9 +369,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .btn-primary-trigger.running {
-  background-color: rgba(6, 182, 212, 0.1);
-  border-color: var(--quantum-cyan);
-  color: var(--quantum-cyan);
+  background-color: rgba(245, 158, 11, 0.12);
+  border-color: var(--quantum-gold);
+  color: var(--quantum-gold);
 }
 
 /* 6. Telemetry Grid */
@@ -410,7 +410,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .telemetry-value.gold { color: var(--quantum-gold); }
-.telemetry-value.cyan { color: var(--quantum-cyan); }
+.telemetry-value.silver { color: var(--quantum-silver); }
 .telemetry-value.emerald { color: var(--quantum-state-0); }
 .telemetry-value.ruby { color: var(--quantum-rejected); }
 
@@ -456,6 +456,21 @@ input[type="range"]::-webkit-slider-thumb:hover {
   font-weight: 400;
 }
 
+.password-display-input.key-reveal-pulse {
+  animation: keyRevealPulse 0.4s ease-out;
+}
+
+@keyframes keyRevealPulse {
+  0% {
+    color: #ffffff;
+    text-shadow: 0 0 16px rgba(245, 158, 11, 0.9);
+  }
+  100% {
+    color: var(--quantum-gold);
+    text-shadow: none;
+  }
+}
+
 .btn-secondary {
   background-color: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
@@ -472,8 +487,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .btn-secondary:hover {
-  border-color: var(--quantum-cyan);
-  color: var(--quantum-cyan);
+  border-color: var(--quantum-gold);
+  color: var(--quantum-gold);
 }
 
 .btn-secondary.copied {
@@ -523,120 +538,242 @@ input[type="range"]::-webkit-slider-thumb:hover {
   color: var(--quantum-gold);
 }
 
-/* Qubit Grid Register */
-.qubit-register-grid {
-  padding: var(--space-lg);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: var(--space-sm);
-  max-height: 480px;
+/* ==========================================================================
+   SUPERCONDUCTING TRANSMON QUBIT REGISTER (HARDWARE DIE ARCHITECTURE)
+   Zero Blue / Zero Purple: Ceramic Graphite, Phosphor Emerald, Amber & Steel
+   ========================================================================== */
+
+.qubit-register-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  max-height: 520px;
   overflow-y: auto;
 }
 
-/* Individual Qubit Instrument Element */
-.qubit-chip {
+/* Register Hardware Overview HUD */
+.register-hardware-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: var(--bg-surface-sunken);
   border: 1px solid var(--border-dim);
-  border-radius: var(--input-radius);
-  padding: 6px;
+  border-radius: var(--panel-radius);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.register-counts-strip {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  position: relative;
+  gap: 16px;
+}
+
+.register-stat-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qubit-view-toggle-group {
+  display: flex;
+  gap: 4px;
+}
+
+.qubit-toggle-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.qubit-chip.accepted-chunk {
-  border-color: rgba(59, 130, 246, 0.4);
+.qubit-toggle-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--quantum-gold);
 }
 
-.qubit-chip.rejected-chunk {
-  border-color: rgba(239, 68, 68, 0.35);
-  background-color: rgba(239, 68, 68, 0.03);
+.qubit-toggle-btn.active {
+  background: var(--quantum-gold);
+  color: var(--bg-void);
+  border-color: var(--quantum-gold);
 }
 
-.qubit-id {
+/* Character Chunks Stream */
+.qubit-chunks-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Individual Character Chunk Silicon Bay */
+.chunk-silicon-bay {
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--quantum-state-0);
+  border-radius: var(--panel-radius);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--transition-fast);
+}
+
+.chunk-silicon-bay:hover {
+  border-color: var(--border-accent);
+}
+
+.chunk-silicon-bay.rejected-bay {
+  border-left-color: var(--quantum-rejected);
+  opacity: 0.65;
+}
+
+.chunk-bay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.chunk-bay-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.chunk-char-pill {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--quantum-gold);
+  color: var(--quantum-gold);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 1px 8px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+}
+
+.chunk-bits-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Individual Transmon Qubit Chip Cell */
+.transmon-cell {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.transmon-cell:hover {
+  transform: translateY(-2px);
+  border-color: var(--quantum-gold);
+}
+
+.transmon-cell.state-0 {
+  border-bottom: 2px solid var(--quantum-state-0);
+}
+
+.transmon-cell.state-1 {
+  border-bottom: 2px solid var(--quantum-state-1);
+}
+
+.transmon-idx {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--text-tertiary);
-  margin-bottom: 4px;
+  font-weight: 600;
 }
 
-/* Superposition indicator vs Collapsed State */
-.qubit-indicator {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.transmon-val {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  transition: all var(--transition-medium);
+  line-height: 1;
 }
 
-/* Superposition State (Oscillating Coherent Wave) */
-.qubit-indicator.superposition {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(245, 158, 11, 0.2));
-  border: 1px solid var(--quantum-cyan);
-  color: var(--quantum-cyan);
-  animation: quantumSuperpositionOscillate 1.2s infinite ease-in-out;
-  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
-}
-
-@keyframes quantumSuperpositionOscillate {
-  0%, 100% {
-    filter: blur(0px);
-    transform: scale(1);
-    border-color: var(--quantum-cyan);
-  }
-  50% {
-    filter: blur(1.5px);
-    transform: scale(0.92);
-    border-color: var(--quantum-gold);
-  }
-}
-
-/* Collapsed State 0 (Ground |0⟩) */
-.qubit-indicator.state-0 {
-  background-color: rgba(16, 185, 129, 0.15);
-  border: 1px solid var(--quantum-state-0);
+.transmon-cell.state-0 .transmon-val {
   color: var(--quantum-state-0);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
-  animation: collapseFlash 0.35s ease-out;
 }
 
-/* Collapsed State 1 (Excited |1⟩) */
-.qubit-indicator.state-1 {
-  background-color: rgba(244, 63, 94, 0.15);
-  border: 1px solid var(--quantum-state-1);
+.transmon-cell.state-1 .transmon-val {
   color: var(--quantum-state-1);
-  box-shadow: 0 0 8px rgba(244, 63, 94, 0.25);
-  animation: collapseFlash 0.35s ease-out;
 }
 
-@keyframes collapseFlash {
-  0% { transform: scale(1.3); filter: brightness(2); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-
-.qubit-tag {
-  margin-top: 4px;
+.transmon-prob {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--text-secondary);
 }
 
-.qubit-tag.char-badge {
-  font-weight: 700;
-  color: var(--quantum-gold);
+/* Dense QPU Die Matrix View */
+.qpu-die-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 6px;
 }
 
-.qubit-tag.discard-badge {
-  color: var(--quantum-rejected);
-  text-decoration: line-through;
+.qpu-matrix-chip {
+  background-color: var(--bg-surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--panel-radius);
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
+
+.qpu-matrix-chip:hover {
+  border-color: var(--quantum-gold);
+  background-color: var(--bg-surface-elevated);
+  transform: translateY(-1px);
+}
+
+.qpu-matrix-chip.state-0 {
+  border-bottom: 2px solid var(--quantum-state-0);
+}
+
+.qpu-matrix-chip.state-1 {
+  border-bottom: 2px solid var(--quantum-state-1);
+}
+
+.qpu-matrix-chip .matrix-idx {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-tertiary);
+}
+
+.qpu-matrix-chip.state-0 .matrix-val {
+  color: var(--quantum-state-0);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.qpu-matrix-chip.state-1 .matrix-val {
+  color: var(--quantum-state-1);
+  font-weight: 700;
+  font-size: 14px;
+}
+
 
 /* 9. Rejection Sampling Table (Scientific Trace) */
 .sampling-trace-view {
@@ -729,7 +866,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .code-terminal-view pre {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--quantum-cyan);
+  color: var(--quantum-silver);
   line-height: 1.6;
 }
 
@@ -852,7 +989,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .bloch-angle-val {
   font-size: 13px;
   font-weight: 700;
-  color: var(--quantum-cyan);
+  color: var(--quantum-gold);
 }
 
 /* 13. Live Benchmark Suite Layout */
@@ -1040,7 +1177,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .cryo-metric-val {
-  color: var(--quantum-cyan);
+  color: var(--quantum-silver);
   font-weight: 600;
 }
 
@@ -1069,7 +1206,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .audio-toggle-btn:hover {
-  border-color: var(--quantum-cyan);
+  border-color: var(--quantum-gold);
   color: var(--text-primary);
 }
 
@@ -1148,9 +1285,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .preset-pill-btn:hover {
-  border-color: var(--quantum-cyan);
-  color: var(--quantum-cyan);
-  background-color: rgba(6, 182, 212, 0.05);
+  border-color: var(--quantum-gold);
+  color: var(--quantum-gold);
+  background-color: rgba(245, 158, 11, 0.05);
 }
 
 /* Export Dropdown Group */
@@ -1198,8 +1335,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .export-menu-item:hover {
-  background-color: rgba(6, 182, 212, 0.12);
-  color: var(--quantum-cyan);
+  background-color: rgba(245, 158, 11, 0.12);
+  color: var(--quantum-gold);
 }
 
 /* QR Code Modal */
@@ -1291,7 +1428,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--panel-radius);
-  color: var(--quantum-cyan);
+  color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
@@ -1302,9 +1439,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .gate-btn:hover {
-  border-color: var(--quantum-cyan);
-  background-color: rgba(6, 182, 212, 0.1);
-  color: #fff;
+  border-color: var(--quantum-gold);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--quantum-gold);
   transform: translateY(-1px);
 }
 
