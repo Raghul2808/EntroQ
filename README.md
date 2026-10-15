@@ -1,9 +1,9 @@
-# QuantGen — Quantum Cryptographic Password & Passphrase Generator
+# EntroQ — Quantum Cryptographic Password & Passphrase Generator
 
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Qiskit](https://img.shields.io/badge/Qiskit-1.3+-6929C4?logo=qiskit&logoColor=white)](https://qiskit.org/)
-[![Tests](https://img.shields.io/badge/Tests-26%20Passed-10b981)](https://github.com/SomnathShaw001/QuantGen)
+[![Tests](https://img.shields.io/badge/Tests-26%20Passed-10b981)](https://github.com/Raghul2808/EntroQ)
 [![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b.svg)](LICENSE)
 
 > **True physical entropy derived from quantum state superposition, Born rule wavefunction collapse, and mathematically verified zero-bias rejection sampling.**
@@ -14,7 +14,7 @@
 
 Most classical password generators rely on deterministic Pseudo-Random Number Generators (PRNGs) like Python's `random` (Mersenne Twister MT19937) or standard OS entropy pools. While adequate for non-critical use, PRNGs operate on internal deterministic state machines and often suffer from subtle **modulo bias** when mapping raw bits into custom character sets.
 
-**QuantGen** is a full-stack quantum cryptographic tool built with **Qiskit** and **FastAPI**. It simulates genuine quantum circuits on superconducting transmon architecture, executing Hadamard transformations to achieve maximal superposition and measuring non-deterministic bitstrings governed strictly by the Born Rule.
+**EntroQ** is a full-stack quantum cryptographic tool built with **Qiskit** and **FastAPI**. It simulates genuine quantum circuits on superconducting transmon architecture, executing Hadamard transformations to achieve maximal superposition and measuring non-deterministic bitstrings governed strictly by the Born Rule.
 
 ---
 
@@ -36,7 +36,7 @@ $$P(x) = |\langle x | \psi \rangle|^2 = \frac{1}{2^N}$$
 ### 2. Elimination of Modulo Bias via Rejection Sampling
 When mapping a measured integer $v \in [0, 2^b - 1]$ to an alphabet of size $K$ (where $b = \lceil \log_2 K \rceil$), naive systems compute $v \pmod K$. Because $2^b$ is rarely an exact multiple of $K$, lower indices receive disproportionately higher probability.
 
-**QuantGen enforces strict Rejection Sampling:**
+**EntroQ enforces strict Rejection Sampling:**
 * Any chunk measurement where $v \ge K$ is discarded.
 * New quantum shots are collected until a valid integer $0 \le v < K$ is obtained.
 * **Uniformity Guarantee:**
@@ -73,7 +73,7 @@ When mapping a measured integer $v \in [0, 2^b - 1]$ to an alphabet of size $K$ 
 ## 📁 Repository Structure
 
 ```
-QuantGen/
+EntroQ/
 ├── backend/
 │   ├── api/
 │   │   └── routes.py             # REST endpoints (generate, diceware, benchmarks, circuit)
@@ -115,7 +115,7 @@ QuantGen/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/SomnathShaw001/QuantGen.git
+git clone https://github.com/Raghul2808/EntroQ.git
 cd QuantGen
 ```
 

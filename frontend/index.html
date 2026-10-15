@@ -11,10 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   
   <!-- Custom Laboratory Design System -->
-  <link rel="stylesheet" href="/style.css">
-  
-  <!-- Zero-dependency Offline QR Code Engine -->
-  <script src="/qrcode.js"></script>
+ <link rel="stylesheet" href="/static/style.css">
+<script src="/static/qrcode.js"></script>
+<!-- ... -->
+<script src="/static/app.js"></script>
 </head>
 <body>
 
@@ -23,14 +23,14 @@
     <div class="brand-bay">
       <span class="hardware-badge">Qiskit Aer • 0-Bias</span>
       <div>
-        <h1 class="instrument-title">QUANTUM ENTROPY GENERATOR</h1>
+        <h1 class="instrument-title">EntroQ</h1>
         <p class="instrument-subtitle">True Quantum Randomness via Hadamard Superposition State Collapse</p>
       </div>
     </div>
 
     <!-- Cryogenic Physical Telemetry HUD & Audio Sonification -->
     <div style="display: flex; align-items: center; gap: 14px;">
-      <div class="cryo-hud" aria-label="Cryostat Hardware Telemetry">
+      <!-- <div class="cryo-hud" aria-label="Cryostat Hardware Telemetry">
         <div class="cryo-metric-item">
           <span class="cryo-metric-label">Temp:</span>
           <span class="cryo-metric-val gold">14.8 mK</span>
@@ -43,7 +43,7 @@
           <span class="cryo-metric-label">Fid:</span>
           <span class="cryo-metric-val emerald">99.2%</span>
         </div>
-      </div>
+      </div>-->
 
       <button type="button" id="audio-toggle-btn" class="audio-toggle-btn active" title="Toggle Cryogenic Acoustic Sonification">
         <span id="audio-btn-icon">🔊</span> <span id="audio-btn-label">SOUND: ON</span>
@@ -252,7 +252,7 @@
           </button>
 
           <!-- Export Dropdown -->
-          <div class="export-dropdown-wrapper">
+          <!--<div class="export-dropdown-wrapper">
             <button type="button" id="export-dropdown-btn" class="btn-secondary" title="Export Key in various formats">
               Export ▼
             </button>
@@ -266,7 +266,7 @@
 
           <button type="button" id="qr-modal-btn" class="btn-secondary" title="Generate Air-Gapped Mobile QR Code">
             📱 QR Code
-          </button>
+          </button>-->
 
           <button type="button" id="regen-btn" class="btn-secondary" title="Regenerate with current parameters">
             Regenerate
@@ -292,14 +292,14 @@
           <div class="tab-selector-bar" role="tablist">
             <button type="button" class="tab-btn active" data-tab="qubits" role="tab" aria-selected="true">Qubit Register</button>
             <button type="button" class="tab-btn" data-tab="bloch" role="tab" aria-selected="false">Bloch Sphere 3D</button>
-            <button type="button" class="tab-btn" data-tab="cryptanalysis" role="tab" aria-selected="false">Cryptanalysis (Grover)</button>
-            <button type="button" class="tab-btn" data-tab="batch" role="tab" aria-selected="false">Batch Vault</button>
+            <!-- <button type="button" class="tab-btn" data-tab="cryptanalysis" role="tab" aria-selected="false">Cryptanalysis (Grover)</button> -->
+            <!-- <button type="button" class="tab-btn" data-tab="batch" role="tab" aria-selected="false">Batch Vault</button> -->
             <button type="button" class="tab-btn" data-tab="sampling" role="tab" aria-selected="false">Rejection Trace</button>
-            <button type="button" class="tab-btn" data-tab="benchmark" role="tab" aria-selected="false">PRNG Benchmark</button>
-            <button type="button" class="tab-btn" data-tab="sandbox" role="tab" aria-selected="false">Modulo Sandbox</button>
-            <button type="button" class="tab-btn" data-tab="circuit" role="tab" aria-selected="false">Circuit SVG</button>
-            <button type="button" class="tab-btn" data-tab="qasm" role="tab" aria-selected="false">OpenQASM</button>
-            <button type="button" class="tab-btn" data-tab="explainer" role="tab" aria-selected="false">Theory</button>
+           <!--  <button type="button" class="tab-btn" data-tab="benchmark" role="tab" aria-selected="false">PRNG Benchmark</button> -->
+            <!-- <button type="button" class="tab-btn" data-tab="sandbox" role="tab" aria-selected="false">Modulo Sandbox</button> -->
+           <!--  <button type="button" class="tab-btn" data-tab="circuit" role="tab" aria-selected="false">Circuit SVG</button> -->
+           <!--  <button type="button" class="tab-btn" data-tab="qasm" role="tab" aria-selected="false">OpenQASM</button> -->
+           <!--  <button type="button" class="tab-btn" data-tab="explainer" role="tab" aria-selected="false">Theory</button> -->
           </div>
         </div>
 

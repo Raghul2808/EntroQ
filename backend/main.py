@@ -39,10 +39,27 @@ def health_check():
 
 
 # Mount static frontend
+# ... (existing imports and setup)
+
+
+# Mount static frontend
 from pathlib import Path
+from fastapi.responses import FileResponse
 from starlette.staticfiles import StaticFiles
 
 frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
-if frontend_dir.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
 
+if frontend_dir.exists():
+    @app.get("/", include_in_schema=False)
+    def serve_landing():
+        landing_file = frontend_dir / "landing.html"
+        if landing_file.exists():
+            return FileResponse(landing_file)
+        return FileResponse(frontend_dir / "index.html")
+
+    @app.get("/app", include_in_schema=False)
+    def serve_app():
+        return FileResponse(frontend_dir / "index.html")
+
+    app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+    app.mount("/", StaticFiles(directory=str(frontend_dir)), name="frontend")
