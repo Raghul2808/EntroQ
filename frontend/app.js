@@ -165,6 +165,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const backendBeacon = document.getElementById("backend-status-beacon");
   const backendStatusLabel = document.getElementById("backend-status-label");
 
+  if (backendSelect && backendStatusLabel && backendBeacon) {
+    const updateBackendHeader = () => {
+      const mode = backendSelect.value;
+      if (mode === "noisy_qpu") {
+        backendStatusLabel.textContent = "BACKEND: NOISY TRANSMON QPU (1.5% READOUT ERR)";
+        backendBeacon.style.backgroundColor = "var(--quantum-gold)";
+        backendBeacon.style.boxShadow = "0 0 8px var(--quantum-gold)";
+      } else if (mode === "ibm_quantum") {
+        backendStatusLabel.textContent = "BACKEND: IBM QUANTUM CLOUD (SIMULATED QUEUE)";
+        backendBeacon.style.backgroundColor = "var(--quantum-state-1)";
+        backendBeacon.style.boxShadow = "0 0 8px var(--quantum-state-1)";
+      } else {
+        backendStatusLabel.textContent = "BACKEND: IDEAL AERSIMULATOR";
+        backendBeacon.style.backgroundColor = "var(--quantum-state-0)";
+        backendBeacon.style.boxShadow = "0 0 8px var(--quantum-state-0)";
+      }
+    };
+    backendSelect.addEventListener("change", updateBackendHeader);
+    updateBackendHeader();
+  }
+
   // Mode Selection
   const modeTabBtns = document.querySelectorAll(".mode-tab-btn");
   const charControls = document.getElementById("character-mode-controls");

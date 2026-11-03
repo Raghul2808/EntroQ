@@ -17,6 +17,7 @@ from backend.core.circuit import (
     export_circuit_text,
     get_circuit_metadata,
 )
+from backend.core.debias import von_neumann_extract
 from backend.core.entropy import (
     SamplingChunk,
     calculate_shannon_entropy,
@@ -60,6 +61,9 @@ class QuantumPasswordResult:
     circuit_data: dict[str, Any]
     qubit_states: list[QubitStateInfo]
     probability_distribution: dict[str, Any]
+    # Von Neumann Hardware Debiasing Telemetry
+    von_neumann_enabled: bool = False
+    von_neumann_discarded_pairs: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -105,6 +109,8 @@ class QuantumPasswordResult:
                 for q in self.qubit_states
             ],
             "probability_distribution": self.probability_distribution,
+            "von_neumann_enabled": self.von_neumann_enabled,
+            "von_neumann_discarded_pairs": self.von_neumann_discarded_pairs,
         }
 
 
@@ -118,6 +124,7 @@ def generate_quantum_password(
     seed: int | None = None,
     include_svg: bool = True,
     backend_mode: str = "simulator",
+    apply_von_neumann: bool = False,
 ) -> QuantumPasswordResult:
     """
     Generates a password of target length using genuine quantum entropy:
@@ -125,7 +132,8 @@ def generate_quantum_password(
       2. Constructs an N-qubit quantum circuit (N = b * length)
       3. Applies Hadamard gates to create equal superposition: |psi> = sum |x> / sqrt(2^N)
       4. Measures qubits in computational basis on the chosen quantum backend (Ideal / Noisy QPU / IBM Cloud)
-      5. Uses rejection sampling to map chunks into characters with ZERO modulo bias
+      5. Optionally applies Von Neumann extraction (01->0, 10->1) to eliminate hardware readout skew
+      6. Uses rejection sampling to map chunks into characters with ZERO modulo bias
     """
     if length < 4 or length > 128:
         raise ValueError("Password length must be between 4 and 128 characters.")
@@ -160,13 +168,20 @@ def generate_quantum_password(
     collected_chunks: list[SamplingChunk] = []
     generated_chars: list[str] = []
     rejected_count = 0
+    von_neumann_discarded_pairs = 0
 
     while len(generated_chars) < length:
         total_shots += 1
         shots_data = execute_circuit(qc, shots=1, seed=seed, backend=backend_sim)
         bitstring = shots_data[0]
         all_raw_bitstrings.append(bitstring)
-        accumulated_bits += bitstring
+
+        if apply_von_neumann:
+            clean_bits, discarded_pairs = von_neumann_extract(bitstring)
+            von_neumann_discarded_pairs += discarded_pairs
+            accumulated_bits += clean_bits
+        else:
+            accumulated_bits += bitstring
 
         offset = 0
         remaining_needed = length - len(generated_chars)
@@ -282,4 +297,6 @@ def generate_quantum_password(
         circuit_data=circuit_data,
         qubit_states=qubit_states,
         probability_distribution=probability_distribution,
+        von_neumann_enabled=apply_von_neumann,
+        von_neumann_discarded_pairs=von_neumann_discarded_pairs,
     )

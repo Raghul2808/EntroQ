@@ -2,7 +2,9 @@
 FastAPI API route definitions with rate limiting and hardware backend selection.
 """
 import logging
+import time
 from fastapi import APIRouter, HTTPException, Request, status
+
 from backend.schemas.generator import GeneratePasswordRequest, GeneratePasswordResponse
 from backend.schemas.diceware import (
     GeneratePassphraseRequest,
@@ -15,7 +17,6 @@ from backend.schemas.diceware import (
 from backend.core.generator import generate_quantum_password
 from backend.core.diceware import generate_quantum_passphrase
 from backend.core.rate_limiter import rate_limiter
-import time
 
 logger = logging.getLogger("qrng_api")
 router = APIRouter()
@@ -28,14 +29,13 @@ router = APIRouter()
     summary="Generate Quantum Password",
     description=(
         "Generates a password using true quantum randomness from an AerSimulator circuit "
-        "with Hadamard superposition gates and bias-free rejection sampling."
+        "with Hadamard superposition gates, optional Von Neumann debiasing, and bias-free rejection sampling."
     ),
 )
 def generate_password_endpoint(
     request: GeneratePasswordRequest,
     http_request: Request,
 ) -> GeneratePasswordResponse:
-    # Rate Limiting (Phase 6 Hardening)
     rate_limiter.check(http_request)
 
     try:
@@ -47,21 +47,23 @@ def generate_password_endpoint(
             include_symbols=request.include_symbols,
             custom_charset=request.custom_charset,
             backend_mode=request.backend_mode,
+            apply_von_neumann=request.apply_von_neumann,
         )
 
         # CRITICAL HYGIENE: Never log the generated password!
         logger.info(
-            "Quantum generation completed: backend=%s, length=%d, qubits=%d, shots=%d, rejections=%d, latency=%.2fms",
+            "Quantum generation completed: backend=%s, vn_debias=%s, length=%d, qubits=%d, shots=%d, rejections=%d, vn_discarded=%d, latency=%.2fms",
             result.backend_mode,
+            result.von_neumann_enabled,
             result.length,
             result.num_qubits,
             result.total_shots,
             result.rejected_count,
+            result.von_neumann_discarded_pairs,
             result.execution_time_ms,
         )
 
         return GeneratePasswordResponse(**result.to_dict())
-
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -179,7 +181,7 @@ def generate_batch_endpoint(
     rate_limiter.check(http_request)
     t0 = time.perf_counter()
     passwords: list[BatchItem] = []
-    
+
     try:
         for idx in range(request.count):
             res = generate_quantum_password(
@@ -190,6 +192,7 @@ def generate_batch_endpoint(
                 include_symbols=request.include_symbols,
                 custom_charset=request.custom_charset,
                 backend_mode=request.backend_mode,
+                apply_von_neumann=request.apply_von_neumann,
             )
             passwords.append(
                 BatchItem(
@@ -199,7 +202,7 @@ def generate_batch_endpoint(
                     length=res.length,
                 )
             )
-            
+
         total_time_ms = (time.perf_counter() - t0) * 1000.0
         return GenerateBatchResponse(
             passwords=passwords,
@@ -212,5 +215,3 @@ def generate_batch_endpoint(
     except Exception as exc:
         logger.error("Batch generation error: %s", str(exc), exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Batch generation failed.")
-
-

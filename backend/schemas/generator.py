@@ -55,6 +55,10 @@ class GeneratePasswordRequest(BaseModel):
         "simulator",
         description="Execution mode: 'simulator' (ideal), 'noisy_qpu' (transmon noise), or 'ibm_quantum' (hardware queue)",
     )
+    apply_von_neumann: bool = Field(
+        False,
+        description="Apply Von Neumann debiasing extractor (01->0, 10->1) to raw quantum bitstrings",
+    )
 
 
 class GeneratePasswordResponse(BaseModel):
@@ -78,3 +82,5 @@ class GeneratePasswordResponse(BaseModel):
     circuit: CircuitVisualizationData = Field(..., description="Circuit representations (QASM, text, SVG, depth)")
     qubit_states: list[QubitStateDetail] = Field(..., description="Per-qubit state details before and after measurement")
     probability_distribution: PerQubitProbability = Field(..., description="Born probability vs observed frequency distribution")
+    von_neumann_enabled: bool = Field(False, description="Whether Von Neumann debiasing was applied")
+    von_neumann_discarded_pairs: int = Field(0, description="Number of 00/11 bit pairs discarded by Von Neumann extractor")

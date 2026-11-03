@@ -116,7 +116,7 @@ EntroQ/
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/Raghul2808/EntroQ.git
-cd QuantGen
+cd EntroQ
 ```
 
 ### 2. Create and Activate Virtual Environment
