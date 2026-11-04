@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EntroQ — Interactive Examiner Visual Suite</title>
+
+  <!-- Google Sans Flex, Google Sans Code & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ital,wght@0,300..700;1,300..700&family=Google+Sans+Code:ital,wght@0,300..700;1,300..700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+
+  <!-- Chart.js 4.4.1 & Datalabels 2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <style id="lumi-runtime">
+    /* ============================================================
+     * 1. LUMINOUS DESIGN SYSTEM TOKENS (LIGHT & DARK SSoT)
+     * ============================================================ */
+    :root {
+      --body-bg: #f6f5f4;
+      --ff-sans: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ff-mono: 'Google Sans Code', 'JetBrains Mono', monospace;
+
+      --lumi-sys-spacing--xxs: 2px;
+      --lumi-sys-spacing--xs: 4px;
+      --lumi-sys-spacing--s: 8px;
+      --lumi-sys-spacing--m: 12px;
+      --lumi-sys-spacing--l: 16px;
+      --lumi-sys-spacing--xl: 20px;
+      --lumi-sys-spacing--xxl: 24px;
+      --lumi-sys-spacing--3xl: 28px;
+      --lumi-sys-spacing--4xl: 36px;
+
+      --lumi-sys-shape--extra-small: 4px;
+      --lumi-sys-shape--small: 8px;
+      --lumi-sys-shape--medium: 12px;
+      --lumi-sys-shape--large: 16px;
+      --lumi-sys-shape--large-max: 24px;
+      --lumi-sys-shape--xl: 28px;
+      --lumi-sys-shape--xl-max: 40px;
+      --lumi-sys-shape--full: 999px;
+
+      --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.04);
+      --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.11);
+
+      --lumi-sys-color--surface: #fdfcfc;
+      --lumi-sys-color--surface-dim: #f2f0f0;
+      --lumi-sys-color--surface-bright: #ffffff;
+      --lumi-sys-color--surface-container: #f2f0f0;
+      --lumi-sys-color--surface-container-high: #e6e6e6;
+      --lumi-sys-color--surface-translucent: rgba(255, 255, 255, 0.88);
+      --lumi-sys-color--on-surface: #000000;
+      --lumi-sys-color--on-surface-default: #000000;
+      --lumi-sys-color--on-surface-variant: rgba(0, 0, 0, 0.58);
+      --lumi-sys-color--on-surface-low: rgba(0, 0, 0, 0.08);
+      --lumi-sys-color--positive: #008052;
+      --lumi-sys-color--positive-container: #daf9d4;
+      --lumi-sys-color--error: #de2d29;
+      --lumi-sys-color--error-container: #ffdeec;
+      --lumi-sys-color--accent: #9dd2ff;
+      --lumi-sys-color--accent-container: #dcf1ff;
+      --lumi-sys-color--accent-fixed: #3186ff;
+      --lumi-sys-color--primary: #3186ff;
+      --lumi-sys-color--outline: #727676;
+      --lumi-sys-color--stroke-default: #e3e3e3;
+
+      --lumi-sys-color--chart-series-1: #2575fc;
+      --lumi-sys-color--chart-series-2: #5b6e9e;
+      --lumi-sys-color--chart-series-3: #228a49;
+      --lumi-sys-color--chart-series-4: #62991b;
+      --lumi-sys-color--chart-series-5: #1e564d;
+      --lumi-sys-color--chart-series-6: #526a45;
+      --lumi-sys-color--chart-series-7: #2780c4;
+      --lumi-sys-color--chart-series-8: #997112;
+      --lumi-sys-color--chart-series-9: #705ec2;
+      --lumi-sys-color--chart-series-10: #c84288;
+    }
+
+    :root[data-theme="dark"] {
+      --body-bg: #0f0f0f;
+      --lumi-sys-elevation--level1: 0 0 20px 0 rgba(0, 0, 0, 0.28);
+      --lumi-sys-elevation--level2: 0 0 20px 0 rgba(0, 0, 0, 0.45);
+
+      --lumi-sys-color--surface: #0f0f0f;
+      --lumi-sys-color--surface-dim: #141414;
+      --lumi-sys-color--surface-bright: #1c1c1c;
+      --lumi-sys-color--surface-container: #141414;
+      --lumi-sys-color--surface-container-high: #242428;
+      --lumi-sys-color--surface-translucent: rgba(20, 20, 23, 0.88);
+      --lumi-sys-color--on-surface: #e4e4e7;
+      --lumi-sys-color--on-surface-default: #e4e4e7;
+      --lumi-sys-color--on-surface-variant: rgba(255, 255, 255, 0.58);
+      --lumi-sys-color--on-surface-low: rgba(255, 255, 255, 0.12);
+      --lumi-sys-color--positive: #0ebc5f;
+      --lumi-sys-color--positive-container: #032b1d;
+      --lumi-sys-color--error: #ff5a52;
+      --lumi-sys-color--error-container: #3c0808;
+      --lumi-sys-color--accent: #1f3b9b;
+      --lumi-sys-color--accent-container: #192967;
+      --lumi-sys-color--accent-fixed: #3186ff;
+      --lumi-sys-color--primary: #9dd2ff;
+      --lumi-sys-color--outline: #9a9b9c;
+      --lumi-sys-color--stroke-default: #2d2f38;
+
+      --lumi-sys-color--chart-series-1: #9dd2ff;
+      --lumi-sys-color--chart-series-2: #96a7d6;
+      --lumi-sys-color--chart-series-3: #50e389;
+      --lumi-sys-color--chart-series-4: #c8f585;
+      --lumi-sys-color--chart-series-5: #f5f2e6;
+      --lumi-sys-color--chart-series-6: #dcd8c0;
+      --lumi-sys-color--chart-series-7: #82c7ff;
+      --lumi-sys-color--chart-series-8: #f5d77f;
+      --lumi-sys-color--chart-series-9: #d9ceff;
+      --lumi-sys-color--chart-series-10: #ffa6d7;
+    }
+
+    /* Short Diagram & Chart Aliases */
+    :root {
+      --surface: var(--lumi-sys-color--surface);
+      --surface-dim: var(--lumi-sys-color--surface-dim);
+      --surface-bright: var(--lumi-sys-color--surface-bright);
+      --surface-container: var(--lumi-sys-color--surface-container);
+      --surface-container-high: var(--lumi-sys-color--surface-container-high);
+      --surface-translucent: var(--lumi-sys-color--surface-translucent);
+      --on-surface: var(--lumi-sys-color--on-surface);
+      --on-surface-variant: var(--lumi-sys-color--on-surface-variant);
+      --on-surface-low: var(--lumi-sys-color--on-surface-low);
+      --primary: var(--lumi-sys-color--primary);
+      --accent: var(--lumi-sys-color--accent);
+      --accent-container: var(--lumi-sys-color--accent-container);
+      --accent-fixed: var(--lumi-sys-color--accent-fixed);
+      --positive: var(--lumi-sys-color--positive);
+      --positive-container: var(--lumi-sys-color--positive-container);
+      --error: var(--lumi-sys-color--error);
+      --error-container: var(--lumi-sys-color--error-container);
+      --outline: var(--lumi-sys-color--outline);
+      --stroke-default: var(--lumi-sys-color--stroke-default);
+      --chart-1: var(--lumi-sys-color--chart-series-1);
+      --chart-3: var(--lumi-sys-color--chart-series-3);
+      --chart-8: var(--lumi-sys-color--chart-series-8);
+      --chart-10: var(--lumi-sys-color--chart-series-10);
+      --spacing-xs: 4px;
+      --spacing-s: 8px;
+      --spacing-m: 12px;
+      --spacing-l: 16px;
+      --spacing-xl: 20px;
+      --r-container: 40px;
+      --r-l: 24px;
+      --r-m: 16px;
+      --r-s: 8px;
+      --r-full: 999px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--body-bg);
+      color: var(--on-surface);
+      font-family: var(--ff-sans);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Typography Classes */
+    .lumi-display-s {
+      font-family: var(--ff-sans);
+      font-size: 2rem;
+      line-height: 2.375rem;
+      font-weight: 380;
+    }
+    .lumi-headline-m {
+      font-family: var(--ff-sans);
+      font-size: 1.5rem;
+      line-height: 1.85rem;
+      font-weight: 420;
+      margin: 0;
+    }
+    .lumi-headline-s {
+      font-family: var(--ff-sans);
+      font-size: 1.2rem;
+      line-height: 1.5rem;
+      font-weight: 480;
+      margin: 0;
+    }
+    .lumi-body-l-emphasized {
+      font-family: var(--ff-sans);
+      font-size: 1.0625rem;
+      line-height: 1.5rem;
+      font-weight: 560;
+    }
+    .lumi-body-m {
+      font-family: var(--ff-sans);
+      font-size: 0.9375rem;
+      line-height: 1.35rem;
+      font-weight: 400;
+    }
+    .lumi-body-m-emphasized {
+      font-family: var(--ff-sans);
+      font-size: 0.9375rem;
+      line-height: 1.35rem;
+      font-weight: 560;
+    }
+    .lumi-body-s {
+      font-family: var(--ff-sans);
+      font-size: 0.8125rem;
+      line-height: 1.1rem;
+      font-weight: 400;
+    }
+    .lumi-body-s-emphasized {
+      font-family: var(--ff-sans);
+      font-size: 0.8125rem;
+      line-height: 1.1rem;
+      font-weight: 560;
+    }
+    .lumi-code {
+      font-family: var(--ff-mono);
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .lumi-caption {
+      font-family: var(--ff-mono);
+      font-style: italic;
+      font-size: 12.5px;
+      line-height: 18px;
+    }
+
+    /* Buttons & Segmented Controls */
+    .lumi-btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 36px;
+      padding: 6px 18px;
+      font-family: var(--ff-sans);
+      font-size: 13px;
+      font-weight: 520;
+      border-radius: var(--r-full);
+      border: 1px solid var(--stroke-default);
+      background-color: var(--surface-bright);
+      color: var(--on-surface);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .lumi-btn:hover:not(:disabled) {
+      background-color: var(--surface-container-high);
+    }
+    .lumi-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+    .lumi-btn--accent {
+      background-color: var(--accent);
+      color: var(--on-surface);
+      border-color: transparent;
+    }
+    :root[data-theme="dark"] .lumi-btn--accent {
+      background-color: var(--accent-fixed);
+      color: #ffffff;
+    }
+    .lumi-btn.is-selected {
+      background-color: var(--accent-container);
+      color: var(--primary);
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .lumi-segmented-group {
+      display: inline-flex;
+      flex-wrap: wrap;
+      background-color: var(--surface-dim);
+      padding: 4px;
+      border-radius: var(--r-full);
+      gap: 4px;
+      border: 1px solid var(--stroke-default);
+    }
+    .lumi-segmented-btn {
+      padding: 7px 15px;
+      border: none;
+      border-radius: var(--r-full);
+      background-color: transparent;
+      font-family: var(--ff-sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .lumi-segmented-btn:hover {
+      color: var(--on-surface);
+    }
+    .lumi-segmented-btn.is-active {
+      background-color: var(--surface-bright);
+      color: var(--on-surface);
+      box-shadow: var(--lumi-sys-elevation--level1);
+      font-weight: 560;
+    }
+
+    .lumi-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 0 14px;
+      font-family: var(--ff-sans);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--on-surface);
+      background: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      border-radius: var(--r-full);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .lumi-chip:hover {
+      background: var(--surface-container-high);
+    }
+    .lumi-chip.is-active {
+      background: var(--accent-container);
+      color: var(--primary);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Slider */
+    .lumi-slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+    .lumi-slider {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--stroke-default);
+      outline: none;
+      cursor: pointer;
+    }
+    .lumi-slider::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-fixed);
+      border: 3px solid var(--surface-bright);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+    .lumi-slider-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      height: 32px;
+      padding: 0 12px;
+      background-color: var(--surface-bright);
+      border-radius: var(--r-m);
+      font-family: var(--ff-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+
+    /* Top Sticky Navigation Deck */
+    .suite-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--surface-translucent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--stroke-default);
+      padding: 12px 20px;
+    }
+    .suite-topbar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--positive);
+      box-shadow: 0 0 10px var(--positive);
+    }
+
+    /* Main Suite Feed */
+    .suite-main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .widget-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .widget-section.is-hidden {
+      display: none;
+    }
+
+    .outer-deck {
+      background-color: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      border-radius: var(--r-container);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: var(--lumi-sys-elevation--level1);
+    }
+
+    /* SVG Diagram Rules */
+    svg text {
+      stroke: none;
+      paint-order: fill;
+      user-select: none;
+    }
+    .diag-node, .diagram-node {
+      cursor: pointer;
+      transition: opacity 240ms ease;
+    }
+    .diag-edge, .diag-pill, .conn-edge {
+      pointer-events: none;
+      transition: opacity 240ms ease, stroke 240ms ease;
+    }
+    .diag-dimmed, .is-dimmed {
+      opacity: 0.28;
+    }
+    .diag-hidden {
+      opacity: 0.14;
+    }
+
+    /* Widget 1 Node Shapes */
+    .node-shape {
+      fill: var(--surface-dim);
+      stroke: var(--outline);
+      stroke-width: 1.1px;
+      transition: fill 220ms ease, stroke 220ms ease, stroke-width 220ms ease;
+    }
+    .diag-node:hover > .node-shape {
+      fill: var(--surface-container-high);
+    }
+    .diag-node.is-active > .node-shape {
+      fill: var(--accent-container);
+      stroke: var(--primary);
+      stroke-width: 1.8px;
+    }
+    .diag-node.is-error-active > .node-shape {
+      fill: var(--error-container);
+      stroke: var(--error);
+      stroke-width: 1.8px;
+    }
+
+    /* Widget 3 Node Shapes */
+    .diagram-node > rect.node-box {
+      transition: fill 220ms ease, stroke 220ms ease, stroke-width 220ms ease;
+    }
+    .diagram-node.is-base > rect.node-box {
+      fill: var(--surface-dim);
+      stroke: var(--stroke-default);
+      stroke-width: 1.2px;
+    }
+    .diagram-node.is-upgrade > rect.node-box {
+      fill: var(--surface-container);
+      stroke: var(--outline);
+      stroke-width: 1.4px;
+    }
+    .diagram-node:hover > rect.node-box {
+      fill: var(--surface-container-high);
+    }
+    .diagram-node.is-active > rect.node-box {
+      fill: var(--accent-container);
+      stroke: var(--primary);
+      stroke-width: 2px;
+    }
+    .conn-edge.is-active {
+      stroke: var(--primary);
+      opacity: 1;
+    }
+    @keyframes packetFlow {
+      0% { stroke-dashoffset: 24; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .packet-trace {
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+    .packet-trace.is-active {
+      opacity: 1;
+      animation: packetFlow 0.85s linear infinite;
+    }
+
+    /* Prominent Inspector Deck */
+    .inspector-deck {
+      background-color: var(--surface-dim);
+      border-radius: 32px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border: 1px solid var(--stroke-default);
+    }
+    .inspector-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Qubit Register Cells */
+    .qubit-strip {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .qubit-strip.is-10q {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .qubit-cell {
+      background-color: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      border-radius: var(--r-m);
+      padding: 10px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 220ms ease;
+    }
+    .qubit-cell.is-highlighted {
+      background-color: var(--accent-container);
+      border-color: var(--primary);
+    }
+    .qubit-cell.is-rejected {
+      background-color: var(--error-container);
+      border-color: var(--error);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 14px;
+      border-radius: var(--r-full);
+      background-color: var(--surface-bright);
+      color: var(--on-surface);
+      font-family: var(--ff-mono);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-pill.is-accepted {
+      background-color: var(--positive-container);
+      color: var(--positive);
+    }
+    .status-pill.is-rejected {
+      background-color: var(--error-container);
+      color: var(--error);
+    }
+
+    .readout-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--on-surface-low);
+    }
+    .readout-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+    }
+    .metric-pair {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .control-deck {
+      background-color: var(--surface-dim);
+      border-radius: var(--r-l);
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--stroke-default);
+    }
+    .step-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--r-full);
+      border: 1px solid var(--stroke-default);
+      background: var(--surface-bright);
+      color: var(--on-surface-variant);
+      font-family: var(--ff-mono);
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .step-dot.is-current {
+      background: var(--accent-container);
+      color: var(--primary);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Widget 2 Telemetry & Legend */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .telemetry-card {
+      background-color: var(--surface-dim);
+      border: 1px solid var(--stroke-default);
+      border-radius: var(--r-l);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .lumi-chart-legend {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .lumi-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lumi-legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .lumi-legend-label {
+      font-family: var(--ff-mono);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--on-surface);
+    }
+
+    /* Widget 3 I/O Grid & Von Neumann Strip */
+    .file-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: var(--r-full);
+      background-color: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      font-family: var(--ff-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: var(--r-full);
+      font-size: 12.5px;
+      font-weight: 560;
+    }
+    .role-badge.is-base {
+      background-color: var(--surface-bright);
+      color: var(--on-surface-variant);
+      border: 1px solid var(--stroke-default);
+    }
+    .role-badge.is-upgrade {
+      background-color: var(--accent-container);
+      color: var(--primary);
+    }
+    .io-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .io-box {
+      background-color: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      border-radius: var(--r-l);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .metric-cell {
+      background-color: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      border-radius: var(--r-m);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .vn-pair-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .vn-pair-card {
+      background-color: var(--surface-bright);
+      border: 1px solid var(--stroke-default);
+      border-radius: 12px;
+      padding: 8px 4px;
+      text-align: center;
+      font-family: var(--ff-mono);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .vn-pair-card.is-kept {
+      background-color: var(--positive-container);
+      border-color: var(--positive);
+    }
+    .vn-pair-card.is-dropped {
+      background-color: var(--error-container);
+      border-color: var(--error);
+      opacity: 0.65;
+    }
+
+    @media (max-width: 640px) {
+      .telemetry-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .metrics-strip {
+        grid-template-columns: 1fr;
+      }
+      .vn-pair-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .outer-deck {
+        padding: 16px;
+        border-radius: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP PRESENTATION BAR                                           -->
+  <!-- ===================================================================== -->
+  <header class="suite-topbar">
+    <div class="suite-topbar-inner">
+      <div class="brand-title-wrap">
+        <span class="pulse-dot"></span>
+        <div>
+          <div style="font-weight: 600; font-size: 15px;">EntroQ — Interactive Examiner Visual Suite</div>
+          <div class="lumi-body-s" style="color: var(--on-surface-variant);">Qiskit Hadamard Superposition • Von Neumann Debiaser • 0.00% Modulo Bias</div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <div class="lumi-segmented-group" role="tablist" aria-label="Filter Visuals">
+          <button type="button" class="lumi-segmented-btn is-active" data-view="all">Show All 3 Visuals</button>
+          <button type="button" class="lumi-segmented-btn" data-view="w1">1. Character Pipeline</button>
+          <button type="button" class="lumi-segmented-btn" data-view="w2">2. Modulo vs. Rejection</button>
+          <button type="button" class="lumi-segmented-btn" data-view="w3">3. 5-Stage Architecture</button>
+        </div>
+
+        <button type="button" class="lumi-btn" id="theme-toggle-btn" title="Switch Light / Dark Theme">
+          <span id="theme-toggle-label">☀️ Light Mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="suite-main">
+
+    <!-- ===================================================================== -->
+    <!-- WIDGET 1: ENTROQ QUANTUM PASSWORD CHARACTER PIPELINE                  -->
+    <!-- ===================================================================== -->
+    <section class="widget-section" id="section-w1">
+      <div class="outer-deck">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <h2 class="lumi-headline-m">1. EntroQ Quantum Password Character Pipeline</h2>
+            <p class="lumi-body-m" style="margin: 0; color: var(--on-surface-variant);">
+              7-qubit Hadamard superposition &amp; rejection sampling (EntroQ default alphabet <i>K</i> = 88 characters: 26 upper + 26 lower + 10 digits + 26 symbols)
+            </p>
+          </div>
+          <div class="lumi-segmented-group" role="tablist" aria-label="Simulation Shot Mode">
+            <button type="button" class="lumi-segmented-btn is-active" id="w1-mode-accepted">
+              Accepted Roll (42 &lt; 88)
+            </button>
+            <button type="button" class="lumi-segmented-btn" id="w1-mode-rejected">
+              Rejected Roll (104 &ge; 88)
+            </button>
+            <button type="button" class="lumi-segmented-btn" id="w1-mode-diceware">
+              10-Qubit Diceware (2¹⁰ = 1024)
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline SVG Mechanism Diagram -->
+        <div style="position: relative; width: 100%; overflow: hidden; border-radius: var(--r-l); background: var(--surface); padding: 8px 0;">
+          <svg viewBox="0 0 680 264" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto;" aria-label="4-Stage EntroQ Rejection Sampling Pipeline">
+            <defs>
+              <marker id="lumi-caret" viewBox="0 0 10 10" refX="7.5" refY="5"
+                      markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto">
+                <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--on-surface)"
+                      stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </marker>
+            </defs>
+
+            <!-- Z-ORDER 1: EDGES -->
+            <line id="w1-edge-1-2" class="diag-edge" x1="208" y1="88" x2="244" y2="88"
+                  stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round"
+                  stroke-dasharray="0 4" marker-end="url(#lumi-caret)" />
+
+            <line id="w1-edge-2-3" class="diag-edge" x1="444" y1="88" x2="480" y2="88"
+                  stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round"
+                  stroke-dasharray="0 4" marker-end="url(#lumi-caret)" />
+
+            <!-- Edge 3 -> 4 Accepted Path -->
+            <path id="w1-edge-3-4-pre" class="diag-edge" d="M 612 144 L 612 184 Q 612 200 596 200 L 584 200"
+                  fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round"
+                  stroke-dasharray="0 4" />
+            <line id="w1-edge-3-4-post" class="diag-edge" x1="496" y1="200" x2="444" y2="200"
+                  stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round"
+                  stroke-dasharray="0 4" marker-end="url(#lumi-caret)" />
+
+            <!-- Edge 3 -> 2 Rejected Loopback -->
+            <path id="w1-edge-3-2-pre" class="diag-edge diag-hidden" d="M 580 32 Q 580 12 564 12 L 516 12"
+                  fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round"
+                  stroke-dasharray="0 4" />
+            <path id="w1-edge-3-2-post" class="diag-edge diag-hidden" d="M 408 12 L 360 12 Q 344 12 344 20 L 344 32"
+                  fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round"
+                  stroke-dasharray="0 4" marker-end="url(#lumi-caret)" />
+
+            <!-- Z-ORDER 2: ENCLOSED LABEL PILLS -->
+            <g id="w1-pill-pass" class="diag-pill">
+              <rect x="498" y="190" width="82" height="20" rx="10" fill="var(--surface-dim)" />
+              <text id="w1-pill-pass-text" x="539" y="204" fill="var(--on-surface)" font-size="13" font-style="italic"
+                    font-family="var(--ff-mono)" text-anchor="middle">Pass &lt;88</text>
+            </g>
+
+            <g id="w1-pill-reject" class="diag-pill diag-hidden">
+              <rect x="412" y="2" width="98" height="20" rx="10" fill="var(--surface-dim)" />
+              <text x="461" y="16" fill="var(--on-surface)" font-size="13" font-style="italic"
+                    font-family="var(--ff-mono)" text-anchor="middle">Re-roll &ge;88</text>
+            </g>
+
+            <!-- Z-ORDER 3: NODES -->
+            <g id="w1-node-1" class="diag-node is-active" transform="translate(16, 40)" data-step="1" role="button" tabindex="0">
+              <rect class="node-shape" x="0" y="0" width="184" height="96" rx="40" />
+              <text x="92" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">1. Start Qubits</text>
+              <text id="w1-svg-s1-sub" x="92" y="56" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">0 0 0 0 0 0 0</text>
+              <text id="w1-svg-s1-desc" x="92" y="74" text-anchor="middle" font-family="var(--ff-sans)" font-size="13" fill="var(--on-surface-variant)">7 qubits at |0⟩</text>
+            </g>
+
+            <g id="w1-node-2" class="diag-node" transform="translate(252, 40)" data-step="2" role="button" tabindex="0">
+              <rect class="node-shape" x="0" y="0" width="184" height="96" rx="40" />
+              <text x="92" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">2. Hadamard Gate</text>
+              <text id="w1-svg-s2-sub" x="92" y="56" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">H⊗7 Superposition</text>
+              <text id="w1-svg-s2-desc" x="92" y="74" text-anchor="middle" font-family="var(--ff-sans)" font-size="13" fill="var(--on-surface-variant)">Spin 7 quantum coins</text>
+            </g>
+
+            <g id="w1-node-3" class="diag-node" transform="translate(488, 40)" data-step="3" role="button" tabindex="0">
+              <rect class="node-shape" x="0" y="0" width="176" height="96" rx="40" />
+              <text x="88" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">3. Measure &amp; Check</text>
+              <text id="w1-svg-s3-sub" x="88" y="56" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">0101010 = 42</text>
+              <text id="w1-svg-s3-desc" x="88" y="74" text-anchor="middle" font-family="var(--ff-sans)" font-size="13" fill="var(--on-surface-variant)">42 &lt; 88 (Accepted)</text>
+            </g>
+
+            <g id="w1-node-4" class="diag-node" transform="translate(252, 152)" data-step="4" role="button" tabindex="0">
+              <rect class="node-shape" x="0" y="0" width="184" height="96" rx="40" />
+              <text x="92" y="38" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">4. Character Map</text>
+              <text id="w1-svg-s4-sub" x="92" y="56" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">Index 42 &rarr; 'q'</text>
+              <text id="w1-svg-s4-desc" x="92" y="74" text-anchor="middle" font-family="var(--ff-sans)" font-size="13" fill="var(--on-surface-variant)">Append to password</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Prominent Stage Inspector & Live Qubit Register -->
+        <div class="inspector-deck">
+          <div class="inspector-top">
+            <h3 class="lumi-headline-s" id="w1-stage-title">Stage 1 of 4: Start Qubits (Initialize Register)</h3>
+            <span class="status-pill" id="w1-stage-badge">STATE: INITIALIZED</span>
+          </div>
+
+          <p class="lumi-body-m" id="w1-stage-explanation" style="margin: 0;">
+            Seven qubits are initialized in ground state <i>|0&rangle;</i> (<code>0 0 0 0 0 0 0</code>). Why 7 qubits? EntroQ's default alphabet has <i>K</i> = 88 characters (26 upper + 26 lower + 10 digits + 26 symbols), so <i>b</i> = &lceil;log<sub>2</sub> 88&rceil; = 7 qubits (2<sup>7</sup> = 128 states, 0 to 127).
+          </p>
+
+          <!-- Dynamic 7-Qubit or 10-Qubit Register Strip -->
+          <div class="qubit-strip" id="w1-qubit-register" aria-label="Qubit Register"></div>
+
+          <!-- Readout Metrics Bar -->
+          <div class="readout-bar">
+            <div class="readout-metrics">
+              <div class="metric-pair">
+                <span class="lumi-body-s" style="color: var(--on-surface-variant);">Binary Readout</span>
+                <span class="lumi-code" id="w1-readout-binary">0 0 0 0 0 0 0</span>
+              </div>
+              <div class="metric-pair">
+                <span class="lumi-body-s" style="color: var(--on-surface-variant);">Decimal Value (<i>v</i>)</span>
+                <span class="lumi-code" id="w1-readout-decimal">0 (Ground State)</span>
+              </div>
+              <div class="metric-pair">
+                <span class="lumi-body-s" style="color: var(--on-surface-variant);">Gatekeeper Rule</span>
+                <span class="lumi-code" id="w1-readout-range">0–87 Valid / 88–127 Overflow</span>
+              </div>
+            </div>
+            <div class="metric-pair" style="text-align: end;">
+              <span class="lumi-body-s" style="color: var(--on-surface-variant);">Mapped Secret Output</span>
+              <span class="lumi-headline-s" id="w1-readout-char">Pending&hellip;</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step Navigation Deck -->
+        <div class="control-deck">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="lumi-btn" id="w1-btn-prev">Prev Step</button>
+            <button type="button" class="lumi-btn lumi-btn--accent" id="w1-btn-next">Next Step</button>
+          </div>
+
+          <div class="step-dots" role="group" aria-label="Jump to stage">
+            <button type="button" class="step-dot is-current" data-w1step="1">1</button>
+            <button type="button" class="step-dot" data-w1step="2">2</button>
+            <button type="button" class="step-dot" data-w1step="3">3</button>
+            <button type="button" class="step-dot" data-w1step="4">4</button>
+          </div>
+
+          <span class="lumi-body-s" style="color: var(--on-surface-variant);">
+            Click any SVG pill node or step button to walk the examiner through the circuit
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- WIDGET 2: QUANTUM REJECTION SAMPLING VS. NAIVE MODULO MAPPING         -->
+    <!-- ===================================================================== -->
+    <section class="widget-section" id="section-w2">
+      <div class="outer-deck">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <h2 class="lumi-headline-m">2. Quantum Rejection Sampling vs. Naive Modulo Mapping</h2>
+          <p class="lumi-body-m" id="w2-subtitle-text" style="margin: 0; color: var(--on-surface-variant);">
+            Comparing selection probability per character across EntroQ's default alphabet <i>K</i> = 88 using <i>b</i> = 7 qubits (2<sup>7</sup> = 128 basis states).
+          </p>
+        </div>
+
+        <!-- 4 Telemetry Cards -->
+        <div class="telemetry-grid">
+          <div class="telemetry-card">
+            <p class="lumi-body-s" style="margin: 0; color: var(--on-surface-variant);">Qubits per Chunk (<i>b</i>)</p>
+            <p class="lumi-display-s" style="margin: 0;" id="w2-metric-qubits">7</p>
+            <p class="lumi-caption" style="margin: 0; color: var(--on-surface-variant);" id="w2-meta-qubits">&lceil;log<sub>2</sub> 88&rceil; bits</p>
+          </div>
+          <div class="telemetry-card">
+            <p class="lumi-body-s" style="margin: 0; color: var(--on-surface-variant);">Total Basis States (2<sup><i>b</i></sup>)</p>
+            <p class="lumi-display-s" style="margin: 0;" id="w2-metric-states">128</p>
+            <p class="lumi-caption" style="margin: 0; color: var(--on-surface-variant);" id="w2-meta-states">Uniform 0..127</p>
+          </div>
+          <div class="telemetry-card">
+            <p class="lumi-body-s" style="margin: 0; color: var(--on-surface-variant);">Modulo Bias Ratio</p>
+            <p class="lumi-display-s" style="margin: 0;" id="w2-metric-bias">2.0&times;</p>
+            <p class="lumi-caption" style="margin: 0; color: var(--on-surface-variant);" id="w2-meta-bias">Indices 0–39 favored</p>
+          </div>
+          <div class="telemetry-card">
+            <p class="lumi-body-s" style="margin: 0; color: var(--on-surface-variant);">Discarded States (2<sup><i>b</i></sup> &minus; <i>K</i>)</p>
+            <p class="lumi-display-s" style="margin: 0;" id="w2-metric-discarded">40</p>
+            <p class="lumi-caption" style="margin: 0; color: var(--on-surface-variant);" id="w2-meta-discarded">31.25% rejection rate</p>
+          </div>
+        </div>
+
+        <!-- Chart.js Bar Chart Viewport -->
+        <div>
+          <div style="position: relative; width: 100%; height: 320px; overflow: hidden; border-radius: var(--r-m);">
+            <canvas id="probChart"></canvas>
+          </div>
+          <div class="lumi-chart-legend">
+            <div class="lumi-legend-item">
+              <span class="lumi-legend-dot" id="w2-swatch-modulo" style="background-color: var(--chart-10);"></span>
+              <span class="lumi-legend-label">Naive Modulo (<i>v</i> mod <i>K</i> — Biased Wrap-Around)</span>
+            </div>
+            <div class="lumi-legend-item">
+              <span class="lumi-legend-dot" id="w2-swatch-quantum" style="background-color: var(--chart-1);"></span>
+              <span class="lumi-legend-label">EntroQ Rejection Sampling (<i>v</i> &lt; <i>K</i> — 0.00% Bias)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytical Summary Strip -->
+        <div class="inspector-deck" style="padding: 16px 20px; border-radius: var(--r-l);">
+          <p class="lumi-body-m" id="w2-summary-text" style="margin: 0;">
+            <span class="lumi-body-m-emphasized">Modulo Wrap-Around Spike (*):</span> States 88–127 wrap onto indices 0–39 via <i>v</i> mod 88, giving those 40 characters <span class="lumi-body-m-emphasized">1.563%</span> probability each vs. <span class="lumi-body-m-emphasized">0.781%</span> for indices 40–87. EntroQ discards those 40 overflow states to hold a flat <span class="lumi-body-m-emphasized">1.136%</span> (1/88) across all 88 characters.
+          </p>
+        </div>
+
+        <!-- Control Deck with Presets + Slider + Monte Carlo Mode -->
+        <div class="control-deck" style="flex-direction: column; align-items: stretch; gap: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <span class="lumi-body-s-emphasized" style="color: var(--on-surface-variant); text-transform: uppercase;">Quick Alphabet Presets:</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button type="button" class="lumi-chip is-active" data-kpreset="88">EntroQ Default (K=88)</button>
+              <button type="button" class="lumi-chip" data-kpreset="10">Digits Only (K=10)</button>
+              <button type="button" class="lumi-chip" data-kpreset="26">Uppercase (K=26)</button>
+              <button type="button" class="lumi-chip" data-kpreset="94">Full ASCII (K=94)</button>
+              <button type="button" class="lumi-chip" data-kpreset="64">Power of 2 (K=64 • 0% Bias)</button>
+            </div>
+          </div>
+
+          <div class="lumi-slider-row">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="lumi-body-m" for="w2-k-slider">Target Alphabet Size (<i>K</i>)</label>
+              <span class="lumi-slider-value" id="w2-k-slider-val">88</span>
+            </div>
+            <input type="range" id="w2-k-slider" class="lumi-slider" min="6" max="95" value="88" aria-label="Target Alphabet Size K">
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <span class="lumi-body-m">Distribution View Mode</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="lumi-btn is-selected" id="w2-mode-theoretical">Grouped Ranges (Exact Math)</button>
+              <button type="button" class="lumi-btn" id="w2-mode-montecarlo">10,000-Shot Monte Carlo</button>
+              <button type="button" class="lumi-btn lumi-btn--accent" id="w2-btn-reroll" style="display: none;">Re-sample 10,000 Shots</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- WIDGET 3: ENTROQ 5-STAGE ARCHITECTURE & VON NEUMANN NOISE DEBIASER    -->
+    <!-- ===================================================================== -->
+    <section class="widget-section" id="section-w3">
+      <div class="outer-deck">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <h2 class="lumi-headline-m">3. EntroQ 5-Stage Architecture &amp; Von Neumann Noise Debiaser</h2>
+            <p class="lumi-body-m" style="margin: 0; color: var(--on-surface-variant);">
+              Step-by-step codebase execution flow from <code class="lumi-code">charsets.py</code> &amp; <code class="lumi-code">circuit.py</code> through <code class="lumi-code">debias.py</code> &amp; <code class="lumi-code">entropy.py</code>
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="lumi-btn" id="w3-btn-prev">Prev Stage</button>
+            <span class="lumi-code" id="w3-step-counter" style="padding: 0 10px; color: var(--on-surface-variant);">3 / 5</span>
+            <button type="button" class="lumi-btn lumi-btn--accent" id="w3-btn-next">Next Stage</button>
+          </div>
+        </div>
+
+        <!-- Wrapped 5-Stage Architecture SVG Diagram -->
+        <div style="position: relative; width: 100%; overflow: hidden; border-radius: var(--r-l); background: var(--surface); padding: 12px 8px;">
+          <svg viewBox="0 0 660 328" style="width: 100%; max-width: 660px; height: auto; display: block; margin: 0 auto;" role="img" aria-label="EntroQ 5-stage codebase pipeline diagram">
+            <defs>
+              <marker id="w3-caret" viewBox="0 0 10 10" refX="7.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto">
+                <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </marker>
+              <marker id="w3-caret-active" viewBox="0 0 10 10" refX="7.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto">
+                <path d="M 3 1.2 L 7.5 5 L 3 8.8" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </marker>
+            </defs>
+
+            <!-- Connectors -->
+            <line id="w3-edge-1" class="conn-edge" x1="204" y1="64" x2="232" y2="64" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="0 4" marker-end="url(#w3-caret)"/>
+            <line id="w3-trace-1" class="packet-trace" x1="204" y1="64" x2="232" y2="64" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 8"/>
+
+            <line id="w3-edge-2" class="conn-edge" x1="428" y1="64" x2="456" y2="64" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="0 4" marker-end="url(#w3-caret)"/>
+            <line id="w3-trace-2" class="packet-trace" x1="428" y1="64" x2="456" y2="64" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 8"/>
+
+            <!-- Orthogonal Z-route 3 -> 4 -->
+            <path id="w3-edge-3a" class="conn-edge" d="M 552 116 L 552 124 Q 552 140 536 140 L 438 140" fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="0 4"/>
+            <path id="w3-edge-3b" class="conn-edge" d="M 338 140 L 236 140 Q 220 140 220 156 L 220 172" fill="none" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="0 4" marker-end="url(#w3-caret)"/>
+            <path id="w3-trace-3" class="packet-trace" d="M 552 116 L 552 124 Q 552 140 536 140 L 236 140 Q 220 140 220 156 L 220 172" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="6 8"/>
+
+            <line id="w3-edge-4" class="conn-edge" x1="316" y1="224" x2="356" y2="224" stroke="var(--on-surface)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="0 4" marker-end="url(#w3-caret)"/>
+            <line id="w3-trace-4" class="packet-trace" x1="316" y1="224" x2="356" y2="224" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 8"/>
+
+            <!-- Enclosed Label Pill on Z-connector -->
+            <rect x="342" y="130" width="92" height="20" rx="10" fill="var(--surface-dim)"/>
+            <text x="388" y="144" fill="var(--on-surface)" font-size="13" font-style="italic" font-family="var(--ff-mono)" text-anchor="middle">Clean Bits</text>
+
+            <!-- Stage 1: charsets.py -->
+            <g class="diagram-node is-base" id="w3-node-0" data-stage="0" tabindex="0" role="button">
+              <rect class="node-box" x="20" y="20" width="176" height="88" rx="40"/>
+              <text x="108" y="45" text-anchor="middle" font-family="var(--ff-sans)" font-size="12.5" fill="var(--on-surface-variant)">01 · CORE MODULE</text>
+              <text x="108" y="65" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">Bit-Depth Engine</text>
+              <text x="108" y="85" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">charsets.py</text>
+            </g>
+
+            <!-- Stage 2: circuit.py -->
+            <g class="diagram-node is-base" id="w3-node-1" data-stage="1" tabindex="0" role="button">
+              <rect class="node-box" x="240" y="20" width="180" height="88" rx="40"/>
+              <text x="330" y="45" text-anchor="middle" font-family="var(--ff-sans)" font-size="12.5" fill="var(--on-surface-variant)">02 · CORE MODULE</text>
+              <text x="330" y="65" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">Hadamard &amp; QPU</text>
+              <text x="330" y="85" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">circuit.py</text>
+            </g>
+
+            <!-- Stage 3: debias.py -->
+            <g class="diagram-node is-upgrade is-active" id="w3-node-2" data-stage="2" tabindex="0" role="button">
+              <rect class="node-box" x="464" y="20" width="176" height="88" rx="40"/>
+              <text x="552" y="45" text-anchor="middle" font-family="var(--ff-sans)" font-size="12.5" fill="var(--on-surface-variant)">03 · CUSTOM UPGRADE</text>
+              <text x="552" y="65" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">VN Debiaser</text>
+              <text x="552" y="85" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">debias.py</text>
+            </g>
+
+            <!-- Stage 4: entropy.py -->
+            <g class="diagram-node is-base" id="w3-node-3" data-stage="3" tabindex="0" role="button">
+              <rect class="node-box" x="132" y="180" width="176" height="88" rx="40"/>
+              <text x="220" y="205" text-anchor="middle" font-family="var(--ff-sans)" font-size="12.5" fill="var(--on-surface-variant)">04 · CORE MODULE</text>
+              <text x="220" y="225" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">Rejection Sampler</text>
+              <text x="220" y="245" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">entropy.py</text>
+            </g>
+
+            <!-- Stage 5: generator.py & app.js -->
+            <g class="diagram-node is-upgrade" id="w3-node-4" data-stage="4" tabindex="0" role="button">
+              <rect class="node-box" x="364" y="180" width="176" height="88" rx="40"/>
+              <text x="452" y="205" text-anchor="middle" font-family="var(--ff-sans)" font-size="12.5" fill="var(--on-surface-variant)">05 · FULL-STACK LAB</text>
+              <text x="452" y="225" text-anchor="middle" font-family="var(--ff-sans)" font-size="15" font-weight="500" fill="var(--on-surface)">3D Bloch &amp; Lab UI</text>
+              <text x="452" y="245" text-anchor="middle" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">generator.py / app.js</text>
+            </g>
+
+            <!-- Bottom Legend Strip -->
+            <line x1="20" y1="288" x2="640" y2="288" stroke="var(--stroke-default)" stroke-width="1"/>
+            <rect x="24" y="300" width="20" height="14" rx="7" fill="var(--surface-dim)" stroke="var(--stroke-default)" stroke-width="1"/>
+            <text x="52" y="311" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">Core Pipeline Module</text>
+
+            <rect x="236" y="300" width="20" height="14" rx="7" fill="var(--surface-container)" stroke="var(--outline)" stroke-width="1.3"/>
+            <text x="264" y="311" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">Custom EntroQ Upgrade</text>
+
+            <rect x="448" y="300" width="20" height="14" rx="7" fill="var(--accent-container)" stroke="var(--primary)" stroke-width="1.5"/>
+            <text x="476" y="311" font-family="var(--ff-mono)" font-size="13" font-style="italic" fill="var(--on-surface)">Active Inspected Stage</text>
+          </svg>
+        </div>
+
+        <!-- Stage Inspector Panel -->
+        <div class="inspector-deck">
+          <div class="inspector-top">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span class="file-pill" id="w3-insp-file">debias.py</span>
+              <h3 class="lumi-headline-s" id="w3-insp-title">Stage 3: Von Neumann Hardware Debiaser</h3>
+            </div>
+            <span class="role-badge is-upgrade" id="w3-insp-badge">Custom EntroQ Upgrade</span>
+          </div>
+
+          <p class="lumi-body-m" id="w3-insp-desc" style="margin: 0;">
+            Pairs up consecutive noisy bits from the transmon readout: identical pairs (<code>00</code>, <code>11</code>) are discarded, while transitions map <code>01</code> &rarr; <code>0</code> and <code>10</code> &rarr; <code>1</code>, guaranteeing a mathematically unbiased 50/50 bit distribution even when hardware <i>T</i><sub>1</sub> decay favors ground state 0.
+          </p>
+
+          <div class="io-grid">
+            <div class="io-box">
+              <span class="lumi-body-s" style="color: var(--on-surface-variant); text-transform: uppercase;" id="w3-insp-in-label">Noisy Bit Pairs Input</span>
+              <div class="lumi-code" id="w3-insp-in-val">[00] [01] [10] [00] [10] [01] [11] [01]</div>
+            </div>
+            <div class="io-box">
+              <span class="lumi-body-s" style="color: var(--on-surface-variant); text-transform: uppercase;" id="w3-insp-out-label">Debiased Bitstream Output</span>
+              <div class="lumi-code" id="w3-insp-out-val">drop, 0, 1, drop, 1, 0, drop, 0 &rarr; "01100"</div>
+            </div>
+          </div>
+
+          <!-- Interactive Live Von Neumann Bit-Pair Extractor Strip -->
+          <div class="io-box" style="gap: 10px;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+              <div>
+                <span class="lumi-body-s-emphasized" style="color: var(--primary); text-transform: uppercase;">Interactive Von Neumann Pair Extractor (Live Demo)</span>
+                <p class="lumi-body-s" style="margin: 2px 0 0 0; color: var(--on-surface-variant);">
+                  Simulates 8 noisy qubit pairs (65% biased toward |0&rangle;). Notice how <code>00</code> and <code>11</code> are crossed out while <code>01 &rarr; 0</code> and <code>10 &rarr; 1</code> restore 50/50 balance:
+                </p>
+              </div>
+              <button type="button" class="lumi-btn lumi-btn--accent" id="w3-btn-vn-sample">
+                ⚡ Re-sample Noisy Transmon Readout
+              </button>
+            </div>
+            <div class="vn-pair-grid" id="w3-vn-strip"></div>
+          </div>
+
+          <div class="metrics-strip">
+            <div class="metric-cell">
+              <span class="lumi-body-s" style="color: var(--on-surface-variant);" id="w3-m1-label">Bit Balance (P(0) / P(1))</span>
+              <span class="lumi-headline-s" id="w3-m1-val">50.0% / 50.0%</span>
+            </div>
+            <div class="metric-cell">
+              <span class="lumi-body-s" style="color: var(--on-surface-variant);" id="w3-m2-label">Telemetry Readout</span>
+              <span class="lumi-headline-s" id="w3-m2-val">X Mod | Y VN Pairs</span>
+            </div>
+            <div class="metric-cell">
+              <span class="lumi-body-s" style="color: var(--on-surface-variant);" id="w3-m3-label">Circuit Shot Impact</span>
+              <span class="lumi-headline-s" id="w3-m3-val">4–6 Shots (vs 1–2)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // 0. TOPBAR VIEW SWITCHER & LIGHT/DARK THEME TOGGLE
+    // =========================================================================
+    const viewBtns = document.querySelectorAll('[data-view]');
+    const sections = {
+      w1: document.getElementById('section-w1'),
+      w2: document.getElementById('section-w2'),
+      w3: document.getElementById('section-w3')
+    };
+
+    viewBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-view');
+        viewBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+        Object.keys(sections).forEach(k => {
+          sections[k].classList.toggle('is-hidden', target !== 'all' && target !== k);
+        });
+        if (probChartInstance) {
+          setTimeout(() => probChartInstance.resize(), 50);
+        }
+      });
+    });
+
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const themeLabel = document.getElementById('theme-toggle-label');
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      themeLabel.textContent = next === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+      updateW2Chart();
+    });
+
+    // =========================================================================
+    // 1. WIDGET 1: 4-STAGE CHARACTER & DICEWARE PIPELINE
+    // =========================================================================
+    const W1_DATA = {
+      accepted: {
+        numQubits: 7,
+        svgS1Sub: '0 0 0 0 0 0 0',
+        svgS1Desc: '7 qubits at |0⟩',
+        svgS2Sub: 'H⊗7 Superposition',
+        svgS2Desc: 'Spin 7 quantum coins',
+        svgS3Sub: '0101010 = 42',
+        svgS3Desc: '42 < 88 (Accepted)',
+        svgS4Sub: "Index 42 \u2192 'q'",
+        svgS4Desc: 'Append to password',
+        pillPassText: 'Pass <88',
+        stages: {
+          1: {
+            title: 'Stage 1 of 4: Start Qubits (Initialize 7-Qubit Register)',
+            badge: 'STATE: INITIALIZED',
+            badgeClass: 'status-pill',
+            explanation: 'Seven qubits are initialized in ground state <i>|0&rangle;</i> (<code>0 0 0 0 0 0 0</code>). Why 7 qubits? EntroQ\'s default alphabet has <i>K</i> = 88 characters (26 upper + 26 lower + 10 digits + 26 symbols), so <i>b</i> = &lceil;log<sub>2</sub> 88&rceil; = 7 qubits (2<sup>7</sup> = 128 states, 0 to 127).',
+            qDisplay: ['0', '0', '0', '0', '0', '0', '0'],
+            qClass: '',
+            binary: '0 0 0 0 0 0 0',
+            decimal: '0 (Ground State)',
+            range: '0\u201387 Valid / 88\u2013127 Overflow',
+            charOut: 'Pending\u2026'
+          },
+          2: {
+            title: 'Stage 2 of 4: Hadamard Gate (Spin the 7 Quantum Coins)',
+            badge: 'STATE: 50/50 SUPERPOSITION',
+            badgeClass: 'status-pill',
+            explanation: 'Each of the 7 qubits passes through a Hadamard (<i>H</i>) gate in <code>circuit.py</code>, placing all 7 qubits into an equal 50/50 superposition state <i>|+&rangle;</i> = (|0&rangle; + |1&rangle;)/&radic;2. All 128 possible 7-bit combinations exist with exact 1/128 probability.',
+            qDisplay: ['|+⟩', '|+⟩', '|+⟩', '|+⟩', '|+⟩', '|+⟩', '|+⟩'],
+            qClass: 'is-highlighted',
+            binary: 'Superposition (H\u22977)',
+            decimal: '0\u2013127 Uniform',
+            range: '0\u201387 Valid / 88\u2013127 Overflow',
+            charOut: 'Spinning\u2026'
+          },
+          3: {
+            title: 'Stage 3 of 4: Born Rule Collapse & Rejection Check',
+            badge: 'ACCEPTED (42 < 88)',
+            badgeClass: 'status-pill is-accepted',
+            explanation: 'Measuring the 7 qubits collapses them into binary <code>0 1 0 1 0 1 0</code> (32 + 8 + 2 = decimal <code>42</code>). In <code>entropy.py</code>, the Rejection Sampler checks if <i>v</i> &lt; 88. Because <code>42 &lt; 88</code>, the chunk is <b>ACCEPTED</b> with 0.00% modulo bias.',
+            qDisplay: ['0', '1', '0', '1', '0', '1', '0'],
+            qClass: 'is-highlighted',
+            binary: '0 1 0 1 0 1 0',
+            decimal: '42 (32 + 8 + 2)',
+            range: '42 \u2208 [0, 87] \u2192 PASS',
+            charOut: 'Passed to Stage 4'
+          },
+          4: {
+            title: 'Stage 4 of 4: Unbiased Character Lookup',
+            badge: "OUTPUT: CHARACTER 'q'",
+            badgeClass: 'status-pill is-accepted',
+            explanation: 'Accepted integer <code>42</code> indexes directly into EntroQ\'s 88-character alphabet (<code>charset[42] = \'q\'</code>). Every character in the pool has an exact uniform probability of 1/88 (1.136%).',
+            qDisplay: ['0', '1', '0', '1', '0', '1', '0'],
+            qClass: 'is-highlighted',
+            binary: '0 1 0 1 0 1 0',
+            decimal: '42 \u2192 charset[42]',
+            range: 'Exact 1/88 Probability',
+            charOut: "'q' Appended"
+          }
+        }
+      },
+      rejected: {
+        numQubits: 7,
+        svgS1Sub: '0 0 0 0 0 0 0',
+        svgS1Desc: '7 qubits at |0⟩',
+        svgS2Sub: 'H⊗7 Superposition',
+        svgS2Desc: 'Spin 7 quantum coins',
+        svgS3Sub: '1101000 = 104',
+        svgS3Desc: '104 \u2265 88 (Rejected)',
+        svgS4Sub: 'Blocked by Gatekeeper',
+        svgS4Desc: 'Awaiting valid re-shot',
+        pillPassText: 'Pass <88',
+        stages: {
+          1: {
+            title: 'Stage 1 of 4: Start Qubits (Initialize 7-Qubit Register)',
+            badge: 'STATE: INITIALIZED',
+            badgeClass: 'status-pill',
+            explanation: 'Seven qubits are initialized in ground state <i>|0&rangle;</i> (<code>0 0 0 0 0 0 0</code>) for EntroQ\'s 88-character alphabet.',
+            qDisplay: ['0', '0', '0', '0', '0', '0', '0'],
+            qClass: '',
+            binary: '0 0 0 0 0 0 0',
+            decimal: '0 (Ground State)',
+            range: '0\u201387 Valid / 88\u2013127 Overflow',
+            charOut: 'Pending\u2026'
+          },
+          2: {
+            title: 'Stage 2 of 4: Hadamard Gate (Spin the 7 Quantum Coins)',
+            badge: 'STATE: 50/50 SUPERPOSITION',
+            badgeClass: 'status-pill',
+            explanation: 'Each qubit passes through a Hadamard (<i>H</i>) gate, placing all 7 qubits into uniform superposition across states 0 to 127.',
+            qDisplay: ['|+⟩', '|+⟩', '|+⟩', '|+⟩', '|+⟩', '|+⟩', '|+⟩'],
+            qClass: 'is-highlighted',
+            binary: 'Superposition (H\u22977)',
+            decimal: '0\u2013127 Uniform',
+            range: '0\u201387 Valid / 88\u2013127 Overflow',
+            charOut: 'Spinning\u2026'
+          },
+          3: {
+            title: 'Stage 3 of 4: Overflow Detected & Rejected (104 \u2265 88)',
+            badge: 'REJECTED (104 \u2265 88)',
+            badgeClass: 'status-pill is-rejected',
+            explanation: 'Measuring the 7 qubits collapses them into binary <code>1 1 0 1 0 0 0</code> (64 + 32 + 8 = decimal <code>104</code>). Because <code>104</code> lands in the overflow zone (88\u2013127), EntroQ <b>REJECTS</b> and discards this chunk and loops back to Stage 2 for a fresh quantum shot.',
+            qDisplay: ['1', '1', '0', '1', '0', '0', '0'],
+            qClass: 'is-rejected',
+            binary: '1 1 0 1 0 0 0',
+            decimal: '104 (64 + 32 + 8)',
+            range: '104 \u2208 [88, 127] \u2192 REJECT',
+            charOut: 'Discarded (Re-shot)'
+          },
+          4: {
+            title: 'Stage 4 of 4: Why Naive Modulo (104 % 88 = 16) Is Blocked',
+            badge: 'MODULO BIAS PREVENTED',
+            badgeClass: 'status-pill is-rejected',
+            explanation: 'Stage 4 never receives <code>104</code>! A normal generator would compute <code>104 % 88 = 16 (\'Q\')</code>, making indices 0\u201339 twice as likely to appear. By discarding 104 and re-running the circuit, EntroQ guarantees 0.00% modulo bias.',
+            qDisplay: ['\u2014', '\u2014', '\u2014', '\u2014', '\u2014', '\u2014', '\u2014'],
+            qClass: 'is-rejected',
+            binary: '1 1 0 1 0 0 0 (Dropped)',
+            decimal: '104 (Overflow \u2265 88)',
+            range: 'Re-running Stage 2\u2026',
+            charOut: 'None (0-Bias Guard)'
+          }
+        }
+      },
+      diceware: {
+        numQubits: 10,
+        svgS1Sub: '0000000000',
+        svgS1Desc: '10 qubits at |0⟩',
+        svgS2Sub: 'H⊗10 Superposition',
+        svgS2Desc: '2¹⁰ = 1024 Basis States',
+        svgS3Sub: '0000101010 = 42',
+        svgS3Desc: '0% Rejection (Exact 2¹⁰)',
+        svgS4Sub: "Word #42 \u2192 'aglow'",
+        svgS4Desc: '10.0 bits entropy/word',
+        pillPassText: 'Exact 1024',
+        stages: {
+          1: {
+            title: 'Stage 1 of 4: Initialize 10-Qubit Diceware Register (diceware.py)',
+            badge: 'DICEWARE: 10 QUBITS',
+            badgeClass: 'status-pill',
+            explanation: 'In Diceware Passphrase mode, EntroQ initializes <b>10 qubits</b> in ground state <i>|0&rangle;</i><sup>&otimes;10</sup> per word. Why 10 qubits? Because 2<sup>10</sup> = <b>1,024</b>, matching our curated 1,024-word EFF dictionary 1-to-1!',
+            qDisplay: ['0','0','0','0','0','0','0','0','0','0'],
+            qClass: '',
+            binary: '0000000000',
+            decimal: '0 (10-Qubit Ground)',
+            range: '0\u20131023 Valid (0 Overflow!)',
+            charOut: 'Pending\u2026'
+          },
+          2: {
+            title: 'Stage 2 of 4: 10-Qubit Hadamard Superposition',
+            badge: '2¹⁰ = 1024 STATES',
+            badgeClass: 'status-pill',
+            explanation: 'Applying Hadamard gates <i>H</i><sup>&otimes;10</sup> puts all 10 qubits into uniform superposition across all 1,024 basis states, yielding exactly 10.0 bits of quantum entropy per word.',
+            qDisplay: ['|+⟩','|+⟩','|+⟩','|+⟩','|+⟩','|+⟩','|+⟩','|+⟩','|+⟩','|+⟩'],
+            qClass: 'is-highlighted',
+            binary: 'Superposition (H\u229710)',
+            decimal: '0\u20131023 Uniform',
+            range: 'Exact Power-of-2 Match',
+            charOut: 'Spinning\u2026'
+          },
+          3: {
+            title: 'Stage 3 of 4: Zero-Waste Measurement (0% Rejections Ever)',
+            badge: '100% EFFICIENCY (0 REJECTS)',
+            badgeClass: 'status-pill is-accepted',
+            explanation: 'Measuring the 10 qubits collapses them into <code>0000101010</code> = decimal <code>42</code>. Because 2<sup>10</sup> = 1,024 equals the dictionary length of 1,024, <b>every possible 10-bit integer (0–1023) is valid</b>—zero shots are ever wasted!',
+            qDisplay: ['0','0','0','0','1','0','1','0','1','0'],
+            qClass: 'is-highlighted',
+            binary: '0000101010',
+            decimal: '42 (32 + 8 + 2)',
+            range: '0\u20131023 All Valid (0% Bias)',
+            charOut: 'Word #42 Selected'
+          },
+          4: {
+            title: 'Stage 4 of 4: 1024-Word EFF Dictionary Lookup',
+            badge: "WORD #42: 'aglow'",
+            badgeClass: 'status-pill is-accepted',
+            explanation: 'Integer <code>42</code> selects <code>DICEWARE_1024_WORDLIST[42] = "aglow"</code> in <code>diceware.py</code>. Repeating 5 shots produces a 5-word passphrase with 50.0 bits of pure quantum entropy.',
+            qDisplay: ['0','0','0','0','1','0','1','0','1','0'],
+            qClass: 'is-highlighted',
+            binary: '0000101010',
+            decimal: '42 \u2192 Wordlist[42]',
+            range: 'Exact 1/1024 Probability',
+            charOut: '"aglow" Appended'
+          }
+        }
+      }
+    };
+
+    const w1State = { mode: 'accepted', step: 1 };
+
+    function renderW1() {
+      const mData = W1_DATA[w1State.mode];
+      const sData = mData.stages[w1State.step];
+
+      document.getElementById('w1-svg-s1-sub').textContent = mData.svgS1Sub;
+      document.getElementById('w1-svg-s1-desc').textContent = mData.svgS1Desc;
+      document.getElementById('w1-svg-s2-sub').textContent = mData.svgS2Sub;
+      document.getElementById('w1-svg-s2-desc').textContent = mData.svgS2Desc;
+      document.getElementById('w1-svg-s3-sub').textContent = mData.svgS3Sub;
+      document.getElementById('w1-svg-s3-desc').textContent = mData.svgS3Desc;
+      document.getElementById('w1-svg-s4-sub').textContent = mData.svgS4Sub;
+      document.getElementById('w1-svg-s4-desc').textContent = mData.svgS4Desc;
+      document.getElementById('w1-pill-pass-text').textContent = mData.pillPassText;
+
+      for (let i = 1; i <= 4; i++) {
+        const node = document.getElementById(`w1-node-${i}`);
+        node.classList.remove('is-active', 'is-error-active', 'diag-dimmed');
+        if (i === w1State.step) {
+          if (w1State.mode === 'rejected' && (i === 3 || i === 4)) {
+            node.classList.add('is-error-active');
+          } else {
+            node.classList.add('is-active');
+          }
+        } else if (w1State.mode === 'rejected' && i === 4) {
+          node.classList.add('diag-dimmed');
+        }
+      }
+
+      const isRej = w1State.mode === 'rejected';
+      document.getElementById('w1-edge-3-4-pre').classList.toggle('diag-hidden', isRej);
+      document.getElementById('w1-edge-3-4-post').classList.toggle('diag-hidden', isRej);
+      document.getElementById('w1-pill-pass').classList.toggle('diag-hidden', isRej);
+
+      document.getElementById('w1-edge-3-2-pre').classList.toggle('diag-hidden', !isRej);
+      document.getElementById('w1-edge-3-2-post').classList.toggle('diag-hidden', !isRej);
+      document.getElementById('w1-pill-reject').classList.toggle('diag-hidden', !isRej);
+
+      document.getElementById('w1-stage-title').innerHTML = sData.title;
+      const badgeEl = document.getElementById('w1-stage-badge');
+      badgeEl.textContent = sData.badge;
+      badgeEl.className = sData.badgeClass;
+      document.getElementById('w1-stage-explanation').innerHTML = sData.explanation;
+
+      // Render 7 or 10 Qubit Register Cells
+      const regEl = document.getElementById('w1-qubit-register');
+      regEl.className = `qubit-strip ${mData.numQubits === 10 ? 'is-10q' : ''}`;
+      regEl.innerHTML = '';
+      sData.qDisplay.forEach((val, idx) => {
+        const qNum = mData.numQubits - 1 - idx;
+        const weight = 1 << qNum;
+        const cell = document.createElement('div');
+        cell.className = `qubit-cell ${sData.qClass}`;
+        cell.innerHTML = `
+          <span class="lumi-caption">q<sub>${qNum}</sub> (${weight})</span>
+          <span class="lumi-code lumi-body-l-emphasized">${val}</span>
+        `;
+        regEl.appendChild(cell);
+      });
+
+      document.getElementById('w1-readout-binary').textContent = sData.binary;
+      document.getElementById('w1-readout-decimal').textContent = sData.decimal;
+      document.getElementById('w1-readout-range').textContent = sData.range;
+      document.getElementById('w1-readout-char').textContent = sData.charOut;
+
+      document.getElementById('w1-btn-prev').disabled = (w1State.step <= 1);
+      document.getElementById('w1-btn-next').textContent = (w1State.step === 4) ? 'Restart Step 1' : 'Next Step';
+
+      document.querySelectorAll('[data-w1step]').forEach(dot => {
+        dot.classList.toggle('is-current', parseInt(dot.getAttribute('data-w1step'), 10) === w1State.step);
+      });
+
+      document.getElementById('w1-mode-accepted').classList.toggle('is-active', w1State.mode === 'accepted');
+      document.getElementById('w1-mode-rejected').classList.toggle('is-active', w1State.mode === 'rejected');
+      document.getElementById('w1-mode-diceware').classList.toggle('is-active', w1State.mode === 'diceware');
+    }
+
+    document.getElementById('w1-mode-accepted').addEventListener('click', () => {
+      w1State.mode = 'accepted';
+      if (w1State.step < 3) w1State.step = 3;
+      renderW1();
+    });
+    document.getElementById('w1-mode-rejected').addEventListener('click', () => {
+      w1State.mode = 'rejected';
+      if (w1State.step < 3) w1State.step = 3;
+      renderW1();
+    });
+    document.getElementById('w1-mode-diceware').addEventListener('click', () => {
+      w1State.mode = 'diceware';
+      if (w1State.step < 3) w1State.step = 3;
+      renderW1();
+    });
+    document.getElementById('w1-btn-prev').addEventListener('click', () => {
+      if (w1State.step > 1) { w1State.step--; renderW1(); }
+    });
+    document.getElementById('w1-btn-next').addEventListener('click', () => {
+      w1State.step = w1State.step < 4 ? w1State.step + 1 : 1;
+      renderW1();
+    });
+    document.querySelectorAll('[data-w1step], #section-w1 .diag-node').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const s = parseInt(e.currentTarget.getAttribute('data-w1step') || e.currentTarget.getAttribute('data-step'), 10);
+        if (s >= 1 && s <= 4) { w1State.step = s; renderW1(); }
+      });
+    });
+
+    // =========================================================================
+    // 2. WIDGET 2: CHART.JS REJECTION SAMPLING VS. NAIVE MODULO MAPPING
+    // =========================================================================
+    const w2State = {
+      K: 88, // EntroQ default alphabet size
+      mode: 'theoretical',
+      seed: 2026
+    };
+    let probChartInstance = null;
+
+    function getChartTokens() {
+      const cs = getComputedStyle(document.documentElement);
+      return {
+        fontFamily: cs.getPropertyValue('--ff-sans').trim(),
+        monoFamily: cs.getPropertyValue('--ff-mono').trim(),
+        textColor: cs.getPropertyValue('--on-surface').trim(),
+        deEmphasisColor: cs.getPropertyValue('--on-surface-variant').trim(),
+        gridColor: cs.getPropertyValue('--stroke-default').trim(),
+        surfaceColor: cs.getPropertyValue('--surface-bright').trim(),
+        moduloColor: cs.getPropertyValue('--chart-10').trim(),
+        quantumColor: cs.getPropertyValue('--chart-1').trim()
+      };
+    }
+
+    function createPRNG(seed) {
+      let s = seed % 2147483647;
+      if (s <= 0) s += 2147483646;
+      return function() {
+        s = (s * 16807) % 2147483647;
+        return (s - 1) / 2147483646;
+      };
+    }
+
+    function computeQuantumMetrics(K) {
+      const b = Math.ceil(Math.log2(K));
+      const totalStates = Math.pow(2, b);
+      const overflow = totalStates - K;
+      const probModuloFavored = (2 / totalStates) * 100;
+      const probModuloUnfavored = (1 / totalStates) * 100;
+      const probQuantum = (1 / K) * 100;
+      const rejectionRate = (overflow / totalStates) * 100;
+      const biasRatio = overflow === 0 ? 1.0 : 2.0;
+      return { K, b, totalStates, overflow, probModuloFavored, probModuloUnfavored, probQuantum, rejectionRate, biasRatio };
+    }
+
+    function buildChartBuckets(metrics, mode, seed) {
+      const { K, totalStates, overflow, probModuloFavored, probModuloUnfavored, probQuantum } = metrics;
+      const buckets = [];
+      if (K <= 12) {
+        for (let i = 0; i < K; i++) {
+          buckets.push({
+            label: i < overflow ? `Idx ${i}*` : `Idx ${i}`,
+            start: i, end: i, count: 1, isFavored: i < overflow
+          });
+        }
+      } else {
+        const targetTotalBuckets = 6;
+        if (overflow === 0) {
+          const step = K / targetTotalBuckets;
+          for (let b = 0; b < targetTotalBuckets; b++) {
+            const start = Math.round(b * step);
+            const end = Math.min(K - 1, Math.round((b + 1) * step) - 1);
+            if (start <= end) {
+              buckets.push({ label: `Idx ${start}–${end}`, start, end, count: end - start + 1, isFavored: false });
+            }
+          }
+        } else {
+          let favBuckets = Math.max(1, Math.min(5, Math.round((overflow / K) * targetTotalBuckets)));
+          let unfavBuckets = targetTotalBuckets - favBuckets;
+          for (let i = 0; i < favBuckets; i++) {
+            const start = Math.floor((i * overflow) / favBuckets);
+            const end = Math.floor(((i + 1) * overflow) / favBuckets) - 1;
+            if (start <= end) {
+              buckets.push({ label: `Idx ${start}–${end}*`, start, end, count: end - start + 1, isFavored: true });
+            }
+          }
+          const rem = K - overflow;
+          for (let i = 0; i < unfavBuckets; i++) {
+            const start = overflow + Math.floor((i * rem) / unfavBuckets);
+            const end = overflow + Math.floor(((i + 1) * rem) / unfavBuckets) - 1;
+            if (start <= end) {
+              buckets.push({ label: `Idx ${start}–${end}`, start, end, count: end - start + 1, isFavored: false });
+            }
+          }
+        }
+      }
+
+      if (mode === 'theoretical') {
+        return {
+          labels: buckets.map(b => b.label),
+          moduloData: buckets.map(b => b.isFavored ? Number(probModuloFavored.toFixed(4)) : Number(probModuloUnfavored.toFixed(4))),
+          quantumData: buckets.map(() => Number(probQuantum.toFixed(4))),
+          simStats: null
+        };
+      } else {
+        const SHOTS = 10000;
+        const rand = createPRNG(seed + K * 97);
+        const modCounts = new Array(K).fill(0);
+        const quantCounts = new Array(K).fill(0);
+        let acceptedShots = 0;
+        for (let s = 0; s < SHOTS; s++) {
+          const v = Math.floor(rand() * totalStates);
+          modCounts[v % K]++;
+          if (v < K) { quantCounts[v]++; acceptedShots++; }
+        }
+        return {
+          labels: buckets.map(b => b.label),
+          moduloData: buckets.map(b => {
+            let sum = 0;
+            for (let idx = b.start; idx <= b.end; idx++) sum += modCounts[idx];
+            return Number(((sum / b.count) / SHOTS * 100).toFixed(4));
+          }),
+          quantumData: buckets.map(b => {
+            let sum = 0;
+            for (let idx = b.start; idx <= b.end; idx++) sum += quantCounts[idx];
+            return Number(((sum / b.count) / Math.max(1, acceptedShots) * 100).toFixed(4));
+          }),
+          simStats: {
+            shots: SHOTS,
+            acceptedShots,
+            discardedShots: SHOTS - acceptedShots,
+            empiricalRejectionPct: ((SHOTS - acceptedShots) / SHOTS * 100).toFixed(2)
+          }
+        };
+      }
+    }
+
+    function updateW2Chart() {
+      const m = computeQuantumMetrics(w2State.K);
+      const t = getChartTokens();
+
+      document.getElementById('w2-subtitle-text').innerHTML =
+        `Comparing selection probability per character across target alphabet size <i>K</i> = ${m.K} using <i>b</i> = ${m.b} qubits (2<sup>${m.b}</sup> = ${m.totalStates} basis states).`;
+
+      document.getElementById('w2-metric-qubits').textContent = m.b;
+      document.getElementById('w2-meta-qubits').innerHTML = `&lceil;log<sub>2</sub> ${m.K}&rceil; bits`;
+      document.getElementById('w2-metric-states').textContent = m.totalStates;
+      document.getElementById('w2-meta-states').textContent = `Uniform 0..${m.totalStates - 1}`;
+      document.getElementById('w2-metric-bias').innerHTML = `${m.biasRatio.toFixed(1)}&times;`;
+      document.getElementById('w2-meta-bias').textContent = m.overflow === 0 ? 'Exact power of 2 (0 bias)' : `Indices 0–${m.overflow - 1} favored`;
+      document.getElementById('w2-metric-discarded').textContent = m.overflow;
+      document.getElementById('w2-meta-discarded').textContent = `${m.rejectionRate.toFixed(2)}% rejection rate`;
+
+      document.getElementById('w2-swatch-modulo').style.backgroundColor = t.moduloColor;
+      document.getElementById('w2-swatch-quantum').style.backgroundColor = t.quantumColor;
+
+      const chartData = buildChartBuckets(m, w2State.mode, w2State.seed);
+
+      const summaryEl = document.getElementById('w2-summary-text');
+      if (w2State.mode === 'montecarlo' && chartData.simStats) {
+        summaryEl.innerHTML = `<span class="lumi-body-m-emphasized">10,000-Shot Empirical Run:</span> Out of 10,000 simulated <i>b</i> = ${m.b}-qubit measurements, EntroQ Rejection Sampling accepted <span class="lumi-body-m-emphasized">${chartData.simStats.acceptedShots.toLocaleString()}</span> valid shots (<i>v</i> &lt; ${m.K}) and discarded <span class="lumi-body-m-emphasized">${chartData.simStats.discardedShots.toLocaleString()}</span> overflow shots (${chartData.simStats.empiricalRejectionPct}% rejected), eliminating the 2.0&times; modulo spike on lower character indices.`;
+      } else if (m.overflow === 0) {
+        summaryEl.innerHTML = `<span class="lumi-body-m-emphasized">Power-of-Two Alignment:</span> Because <i>K</i> = ${m.K} exactly matches 2<sup>${m.b}</sup> = ${m.totalStates} basis states, 0 states overflow. Both Naive Modulo and EntroQ Rejection Sampling produce an identical flat <span class="lumi-body-m-emphasized">${m.probQuantum.toFixed(3)}%</span> probability per character with 0% shots discarded.`;
+      } else {
+        summaryEl.innerHTML = `<span class="lumi-body-m-emphasized">Modulo Wrap-Around Spike (*):</span> States ${m.K}–${m.totalStates - 1} wrap onto indices 0–${m.overflow - 1} via <i>v</i> mod ${m.K}, giving those ${m.overflow} characters <span class="lumi-body-m-emphasized">${m.probModuloFavored.toFixed(3)}%</span> probability each vs. <span class="lumi-body-m-emphasized">${m.probModuloUnfavored.toFixed(3)}%</span> for indices ${m.overflow}–${m.K - 1}. EntroQ discards those ${m.overflow} overflow states to hold a flat <span class="lumi-body-m-emphasized">${m.probQuantum.toFixed(3)}%</span> across all ${m.K} characters.`;
+      }
+
+      if (!probChartInstance) return;
+      probChartInstance.data.labels = chartData.labels;
+      probChartInstance.data.datasets[0].data = chartData.moduloData;
+      probChartInstance.data.datasets[0].backgroundColor = t.moduloColor;
+      probChartInstance.data.datasets[1].data = chartData.quantumData;
+      probChartInstance.data.datasets[1].backgroundColor = t.quantumColor;
+
+      probChartInstance.options.scales.x.ticks.color = t.textColor;
+      probChartInstance.options.scales.y.ticks.color = t.textColor;
+      probChartInstance.options.scales.y.grid.color = t.gridColor;
+      if (probChartInstance.options.plugins.datalabels) {
+        probChartInstance.options.plugins.datalabels.color = t.textColor;
+      }
+      probChartInstance.update();
+    }
+
+    function initW2Chart() {
+      const canvas = document.getElementById('probChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const t = getChartTokens();
+      const m = computeQuantumMetrics(w2State.K);
+      const chartData = buildChartBuckets(m, w2State.mode, w2State.seed);
+      const pluginsList = typeof ChartDataLabels !== 'undefined' ? [ChartDataLabels] : [];
+
+      probChartInstance = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        plugins: pluginsList,
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Naive Modulo (v % K)',
+              data: chartData.moduloData,
+              backgroundColor: t.moduloColor,
+              maxBarThickness: 34,
+              categoryPercentage: 0.8,
+              barPercentage: 0.85,
+              borderRadius: { topLeft: 20, topRight: 20, bottomLeft: 0, bottomRight: 0 }
+            },
+            {
+              label: 'EntroQ Rejection Sampling (v < K)',
+              data: chartData.quantumData,
+              backgroundColor: t.quantumColor,
+              maxBarThickness: 34,
+              categoryPercentage: 0.8,
+              barPercentage: 0.85,
+              borderRadius: { topLeft: 20, topRight: 20, bottomLeft: 0, bottomRight: 0 }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { top: 28, right: 16, bottom: 8, left: 8 } },
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              display: ctx => ctx.chart.data.labels.length <= 7,
+              anchor: 'end',
+              align: 'top',
+              offset: 2,
+              color: t.textColor,
+              font: { family: t.monoFamily, size: 11 },
+              formatter: v => (v >= 10 ? v.toFixed(1) : v.toFixed(2)) + '%'
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { display: false },
+              ticks: { font: { family: t.monoFamily, size: 12, style: 'italic' }, color: t.textColor }
+            },
+            y: {
+              beginAtZero: true,
+              grace: '18%',
+              grid: { color: t.gridColor },
+              border: { display: false },
+              ticks: {
+                font: { family: t.monoFamily, size: 12, style: 'italic' },
+                color: t.textColor,
+                maxTicksLimit: 5,
+                callback: v => Number(v).toFixed(v >= 5 ? 1 : 2) + '%'
+              }
+            }
+          }
+        }
+      });
+      updateW2Chart();
+    }
+
+    const kSlider = document.getElementById('w2-k-slider');
+    const kSliderVal = document.getElementById('w2-k-slider-val');
+    const presetChips = document.querySelectorAll('[data-kpreset]');
+
+    function setAlphabetK(newK) {
+      w2State.K = newK;
+      kSlider.value = newK;
+      kSliderVal.textContent = newK;
+      presetChips.forEach(c => c.classList.toggle('is-active', parseInt(c.getAttribute('data-kpreset'), 10) === newK));
+      updateW2Chart();
+    }
+
+    kSlider.addEventListener('input', e => setAlphabetK(parseInt(e.target.value, 10)));
+    presetChips.forEach(chip => {
+      chip.addEventListener('click', () => setAlphabetK(parseInt(chip.getAttribute('data-kpreset'), 10)));
+    });
+
+    document.getElementById('w2-mode-theoretical').addEventListener('click', () => {
+      w2State.mode = 'theoretical';
+      document.getElementById('w2-mode-theoretical').classList.add('is-selected');
+      document.getElementById('w2-mode-montecarlo').classList.remove('is-selected');
+      document.getElementById('w2-btn-reroll').style.display = 'none';
+      updateW2Chart();
+    });
+    document.getElementById('w2-mode-montecarlo').addEventListener('click', () => {
+      w2State.mode = 'montecarlo';
+      document.getElementById('w2-mode-montecarlo').classList.add('is-selected');
+      document.getElementById('w2-mode-theoretical').classList.remove('is-selected');
+      document.getElementById('w2-btn-reroll').style.display = 'inline-flex';
+      updateW2Chart();
+    });
+    document.getElementById('w2-btn-reroll').addEventListener('click', () => {
+      w2State.seed = Math.floor(Math.random() * 900000) + 1000;
+      updateW2Chart();
+    });
+
+    // =========================================================================
+    // 3. WIDGET 3: 5-STAGE CODEBASE PIPELINE & VON NEUMANN DEBIASER
+    // =========================================================================
+    const W3_STEPS = [
+      {
+        file: 'charsets.py',
+        title: 'Stage 1: Alphabet Pool & Bit-Depth Engine',
+        role: 'Core Pipeline Module',
+        isUpgrade: false,
+        desc: 'Deduplicates the active character pool of size <i>K</i> (default <i>K</i> = 88) and computes the minimum qubits required per character using the ceiling logarithm formula <i>b</i> = &lceil;log<sub>2</sub> <i>K</i>&rceil; = 7 qubits.',
+        inLabel: 'Selected Toggles Input',
+        inVal: 'Upper(26) + Lower(26) + Digits(10) + Symbols(26) = 88 chars',
+        outLabel: 'Bit-Depth Allocation Output',
+        outVal: 'b = ceil(log2(88)) = 7 qubits/char -> N = 7 * 16 = 112 qubits',
+        m1Label: 'Default Alphabet (K)',
+        m1Val: '88 Unique Chars',
+        m2Label: 'Qubits per Char (b)',
+        m2Val: '7 Qubits (0..127)',
+        m3Label: '16-Char Register (N)',
+        m3Val: '112 Parallel Qubits'
+      },
+      {
+        file: 'circuit.py',
+        title: 'Stage 2: Qiskit Hadamard Circuit & Transmon Noise Model',
+        role: 'Core Pipeline Module',
+        isUpgrade: false,
+        desc: 'Constructs an <i>N</i>-qubit <code>QuantumCircuit</code>, applies parallel Hadamard gates <i>H</i><sup>&otimes;<i>N</i></sup> for maximal superposition, executes on Ideal <code>AerSimulator</code> or Noisy Transmon QPU (0.1% gate error + 1.5% readout error), and reverses Qiskit\'s little-endian bitstrings (<code>bitstring[::-1]</code>).',
+        inLabel: 'Initialized Register Input',
+        inVal: '|0⟩⊗112 -> qc.h(range(112)) -> qc.measure_all()',
+        outLabel: 'Normalized Big-Endian Bitstring',
+        outVal: 'bitstring[::-1] -> index i maps to physical wire q[i]',
+        m1Label: 'Circuit Gate Depth',
+        m1Val: 'Depth = 2 (H + M)',
+        m2Label: 'Noisy Transmon Model',
+        m2Val: '0.1% H / 1.5% Readout',
+        m3Label: 'Endianness Fix',
+        m3Val: 'bitstring[::-1]'
+      },
+      {
+        file: 'debias.py',
+        title: 'Stage 3: Von Neumann Hardware Debiaser',
+        role: 'Custom EntroQ Upgrade',
+        isUpgrade: true,
+        desc: 'Pairs up consecutive noisy bits from the transmon readout: identical pairs (<code>00</code>, <code>11</code>) are discarded, while transitions map <code>01</code> &rarr; <code>0</code> and <code>10</code> &rarr; <code>1</code>, guaranteeing a mathematically unbiased 50/50 bit distribution even when hardware <i>T</i><sub>1</sub> decay favors ground state 0.',
+        inLabel: 'Noisy Bit Pairs Input',
+        inVal: '[00] [01] [10] [00] [10] [01] [11] [01]',
+        outLabel: 'Debiased Bitstream Output',
+        outVal: 'drop, 0, 1, drop, 1, 0, drop, 0 -> "01100"',
+        m1Label: 'Bit Balance (P(0) / P(1))',
+        m1Val: '50.0% / 50.0%',
+        m2Label: 'Telemetry Readout',
+        m2Val: 'X Mod | Y VN Pairs',
+        m3Label: 'Circuit Shot Impact',
+        m3Val: '4–6 Shots (vs 1–2)'
+      },
+      {
+        file: 'entropy.py',
+        title: 'Stage 4: Zero-Bias Rejection Sampler & Shannon Entropy',
+        role: 'Core Pipeline Module',
+        isUpgrade: false,
+        desc: 'Slices the debiased bitstream into 7-bit integers <i>v</i> &in; [0, 127]. Strictly accepts <i>v</i> &lt; 88 and discards overflow values <i>v</i> &ge; 88 to prevent modulo bias, then computes empirical Shannon entropy <i>H</i> = &minus;&sum; <i>p</i>(<i>c</i>) log<sub>2</sub> <i>p</i>(<i>c</i>).',
+        inLabel: '7-Bit Integer Chunks',
+        inVal: '0101010 (42 < 88) · 1101000 (104 >= 88) · 0010111 (23 < 88)',
+        outLabel: 'Validated Character Stream',
+        outVal: "42 -> 'q', 104 -> [Rejected], 23 -> 'X' (0.00% Modulo Bias)",
+        m1Label: 'Modulo Bias Level',
+        m1Val: '0.00% (Strictly 0)',
+        m2Label: 'Statistical Proof',
+        m2Val: 'Pearson χ² (p > 0.01)',
+        m3Label: 'Theoretical Max (16c)',
+        m3Val: '103.35 Bits'
+      },
+      {
+        file: 'generator.py / app.js',
+        title: 'Stage 5: Multi-Shot Orchestrator & 3D Bloch Lab UI',
+        role: 'Full-Stack Lab Suite',
+        isUpgrade: true,
+        desc: 'Loops quantum shots until <i>L</i> valid characters are collected, enforces zero password logging and sliding-window IP rate limiting (30 req/min), and renders the Transmon Chunk Bays and interactive 3D Bloch Sphere with unitary gate controls (H, X, Y, Z, S, T).',
+        inLabel: 'Orchestrator Telemetry Package',
+        inVal: 'QuantumPasswordResult(password, chunks, qubit_states, vn_pairs)',
+        outLabel: 'Interactive Laboratory Views',
+        outVal: 'Qubit Register Bays + 3D Bloch Canvas + Rejection Audit Table',
+        m1Label: 'Secret Logging',
+        m1Val: 'Zero-Knowledge (0 Logs)',
+        m2Label: 'Rate Limiter Guard',
+        m2Val: '30 Req / 60s Window',
+        m3Label: 'Interactive Views',
+        m3Val: '4 Core Lab Tabs'
+      }
+    ];
+
+    let w3ActiveStage = 2; // Start on Stage 3 (debias.py) to highlight the upgrade
+
+    function renderW3() {
+      const idx = w3ActiveStage;
+      for (let i = 0; i < 5; i++) {
+        const node = document.getElementById(`w3-node-${i}`);
+        node.classList.toggle('is-active', i === idx);
+        node.classList.toggle('is-dimmed', i > idx);
+      }
+
+      const edges = [
+        [document.getElementById('w3-edge-1')],
+        [document.getElementById('w3-edge-2')],
+        [document.getElementById('w3-edge-3a'), document.getElementById('w3-edge-3b')],
+        [document.getElementById('w3-edge-4')]
+      ];
+      edges.forEach((group, eIdx) => {
+        const isIncoming = (eIdx === idx - 1);
+        const isPast = (eIdx < idx - 1);
+        group.forEach((el, pIdx) => {
+          el.classList.toggle('is-active', isIncoming);
+          el.classList.toggle('is-dimmed', !isIncoming && !isPast);
+          if (group.length === 1 || pIdx === 1) {
+            el.setAttribute('marker-end', isIncoming ? 'url(#w3-caret-active)' : 'url(#w3-caret)');
+          }
+        });
+      });
+
+      for (let t = 1; t <= 4; t++) {
+        document.getElementById(`w3-trace-${t}`).classList.toggle('is-active', t === idx);
+      }
+
+      const d = W3_STEPS[idx];
+      document.getElementById('w3-step-counter').textContent = `${idx + 1} / 5`;
+      document.getElementById('w3-btn-prev').disabled = (idx === 0);
+      document.getElementById('w3-btn-next').disabled = (idx === W3_STEPS.length - 1);
+
+      document.getElementById('w3-insp-file').textContent = d.file;
+      document.getElementById('w3-insp-title').textContent = d.title;
+      const badge = document.getElementById('w3-insp-badge');
+      badge.textContent = d.role;
+      badge.className = `role-badge ${d.isUpgrade ? 'is-upgrade' : 'is-base'}`;
+
+      document.getElementById('w3-insp-desc').innerHTML = d.desc;
+      document.getElementById('w3-insp-in-label').textContent = d.inLabel;
+      document.getElementById('w3-insp-in-val').textContent = d.inVal;
+      document.getElementById('w3-insp-out-label').textContent = d.outLabel;
+      document.getElementById('w3-insp-out-val').textContent = d.outVal;
+
+      document.getElementById('w3-m1-label').textContent = d.m1Label;
+      document.getElementById('w3-m1-val').textContent = d.m1Val;
+      document.getElementById('w3-m2-label').textContent = d.m2Label;
+      document.getElementById('w3-m2-val').textContent = d.m2Val;
+      document.getElementById('w3-m3-label').textContent = d.m3Label;
+      document.getElementById('w3-m3-val').textContent = d.m3Val;
+    }
+
+    function sampleVonNeumannStrip() {
+      const strip = document.getElementById('w3-vn-strip');
+      strip.innerHTML = '';
+      const rawPairs = [];
+      const cleanBits = [];
+      for (let i = 0; i < 8; i++) {
+        // Simulate 65% biased noisy transmon readout toward 0
+        const b1 = Math.random() < 0.65 ? '0' : '1';
+        const b2 = Math.random() < 0.65 ? '0' : '1';
+        const pair = b1 + b2;
+        rawPairs.push(`[${pair}]`);
+
+        const card = document.createElement('div');
+        if (pair === '01') {
+          cleanBits.push('0');
+          card.className = 'vn-pair-card is-kept';
+          card.innerHTML = `<span>Pair "${pair}"</span><strong>&rarr; 0</strong>`;
+        } else if (pair === '10') {
+          cleanBits.push('1');
+          card.className = 'vn-pair-card is-kept';
+          card.innerHTML = `<span>Pair "${pair}"</span><strong>&rarr; 1</strong>`;
+        } else {
+          cleanBits.push('drop');
+          card.className = 'vn-pair-card is-dropped';
+          card.innerHTML = `<span style="text-decoration: line-through;">Pair "${pair}"</span><span>DROP</span>`;
+        }
+        strip.appendChild(card);
+      }
+
+      if (w3ActiveStage === 2) {
+        const extracted = cleanBits.filter(x => x !== 'drop').join('');
+        document.getElementById('w3-insp-in-val').textContent = rawPairs.join(' ');
+        document.getElementById('w3-insp-out-val').textContent = `${cleanBits.join(', ')} -> "${extracted || '(re-shot)'}"`;
+      }
+    }
+
+    document.getElementById('w3-btn-prev').addEventListener('click', () => {
+      if (w3ActiveStage > 0) { w3ActiveStage--; renderW3(); }
+    });
+    document.getElementById('w3-btn-next').addEventListener('click', () => {
+      if (w3ActiveStage < W3_STEPS.length - 1) { w3ActiveStage++; renderW3(); }
+    });
+    document.querySelectorAll('#section-w3 .diagram-node').forEach(node => {
+      node.addEventListener('click', () => {
+        w3ActiveStage = parseInt(node.getAttribute('data-stage'), 10);
+        renderW3();
+      });
+    });
+    document.getElementById('w3-btn-vn-sample').addEventListener('click', sampleVonNeumannStrip);
+
+    // Initialize all 3 widgets on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderW1();
+      initW2Chart();
+      renderW3();
+      sampleVonNeumannStrip();
+    });
+  </script>
+</body>
+</html>
